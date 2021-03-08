@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 
 app = Flask(__name__)
@@ -13,3 +13,9 @@ def home():
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8080, debug=True) 
+
+@app.route("/message_form", methods = ["GET", "POST"])
+def message_form():
+    msg = request.form.get["message"]
+    visible = request.form.get["visibility"]
+    return(msg, visible)
