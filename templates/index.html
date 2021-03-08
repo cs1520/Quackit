@@ -1,10 +1,56 @@
 <html>
+<style>
+input[type = text], select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid rgb(100, 100, 100);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit] {
+  width: 100%;
+  background-color: #79834d;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+div {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+</style>
+
 <head>
-  <title>A hardcoded title</title>
+  <title>Quacker</title>
   <link href="/static/style.css" rel="stylesheet">
 </head>
 <body>
-  <h1>Welcome to App Engine</h1>
-  <p>Start building your project from this template</p>
+  <h1>Welcome to Quacker!</h1>
+  <p>Start chatting with others by sending a message</p>
+
+  <div>
+
+    <label for="msg">Enter your message:</label>
+    <input type="text" id="msg" name="message" placeholder="Your message...">
+
+    <label for="visibility">Message visible to</label>
+    <select id="visibility" name="visibility">
+      <option value="everyone">Everyone</option>
+      <option value="followers">Followers</option>
+      <option value="friends">Friends</option>
+    </select>
+  
+    <input type="submit" value="Send">
+
+  </div>
+  
 </body>
 </html>
