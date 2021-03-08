@@ -1,7 +1,18 @@
 from flask import Flask, render_template, request
-
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+db = SQLAlchemy(app)
+
+class Message(db.model):
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    message = db.Column(db.String(200), unique=False, nullable=False)
+    visibility = db.Column(db.String(10), unique=False, nullable=False)
+
+    def __msgout__(self):
+        return ("%s: %s" + "visible to: %s" 
+                % (self.username, self.message, self.visibility))
 
 
 @app.route("/")
