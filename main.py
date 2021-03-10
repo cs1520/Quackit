@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, emit
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, send, emit
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'mysecretkey'
@@ -32,8 +32,8 @@ def handle_disconnect():
 	print('User Disconnected')
 
 @socketio.on('message')
-def handle_message(msg):
-	emit('message', msg, broadcast=True)
+def handle_message(data):
+	emit('message: ', data, broadcast=True)
 
 
 if __name__ == "__main__":
