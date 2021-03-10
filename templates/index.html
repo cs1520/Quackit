@@ -30,10 +30,23 @@ div {
 </style>
 
 <head>
-  <title>Quacker</title>
-  <link href="/static/style.css" rel="stylesheet">
+<title>Quacker</title>
+<link href="/static/style.css" rel="stylesheet">
 </head>
 <body>
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+    });
+    socket.on('message', function() {
+		socket.emit('message')
+	});
+</script>
+<ul id="messages"></ul>
+<input type="text" id="myMessage">
+<button id="sendbutton">Send</button>
   <h1>Welcome to Quacker!</h1>
   <p>Start chatting with others by sending a message</p>
 
