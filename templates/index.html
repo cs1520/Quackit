@@ -36,20 +36,34 @@ div {
 <body>
 	<h1>1502 Messenger!</h1>
 	
-	<form action="/action_page.php">
-		<label for="data">Message:</label>
-		<input type="text" id="data" name="data" value="Type Message Here..."<br>
-		<input type="submit" value="Post">
-	</form>
-<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
-<script type="text/javascript" charset="utf-8">
-    var socket = io();
+	<label for="message_entry">Message:</label>
+	<input type="text" id="message_entry" name="data" value="Type Message Here..."<br>
+	
+	<button>Post</button>
+	
+	<div id="message_board"></div>
+	
+	<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+	<script type="text/javascript" charset="utf-8">
+	
+	const button = document.querySelector('button');
+	var msg = document.getElementById("message_entry").value;
+	
+	button.addEventListener('click', event=> {
+			var newMessage = document.createTextNode("Message:" + msg);
+			var newElement = document.createElement("div");
+			newElement.appendChild(newMessage);
+			const currentDiv = document.getElementById("div");
+			document.body.insertAfter(newElement, currentDiv);
+	}
+	
+	var socket = io();
     socket.on('connect', function() {
         socket.emit('my event', {data: 'I\'m connected!'});
     });
     socket.on('message', function() {
 		socket.emit('message', {data: })
 	});
-</script>
+	</script>
 </body>
 </html>
