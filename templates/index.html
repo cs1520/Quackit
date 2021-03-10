@@ -38,8 +38,8 @@ div {
   <p>Start chatting with others by sending a message</p>
 
     <div>
-      <label for="msg">Enter your message:</label>
-      <input type="text" id="msg" name="message" placeholder="Your message...">
+      <label for="input">Enter your message:</label>
+      <input type="text" id="input" name="message" placeholder="Your message...">
 
 <!--
       <label for="vsblty">Make message visible to</label>
@@ -55,11 +55,50 @@ div {
 
   <br>
 
-  <div style="height: auto; width: auto; overflow: auto;">
-    <p id = "channel">Message goes here</p>
+  <div style="height: auto; width: auto; overflow: auto;">  
+    <div style="height: auto; width: 70%; float: left; overflow: auto;">
+        <p id = "channel">Message goes here</p>
+    </div>
+    <div style="height: auto; width: auto; margin-left: 70%; overflow: auto;">
+        <p id = "time">Time goes here</p>
+    </div>
   </div>
 
-<script src="main.js"></script>
+<script>
+
+var msgBoard = [];
+var timBoard = [];
+var pos = 0;
+
+function sendMessage() {
+  var message = "";
+  var time = "";
+  var d = new Date();
+  var t = d.toLocaleString();
+  var tab = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+
+  msgBoard[pos] = (document.getElementById("input").value + tab + "<br>");
+  timBoard[pos] = t + "<br>";
+
+  pos++;
+  if(pos >= 10)
+    pos = 0;
+
+  for(var i = pos; i < msgBoard.length; i ++ ){
+    message += msgBoard[i];
+    time += timBoard[i];
+  }
+  for(var i = 0; i < pos; i ++){
+      message += msgBoard[i];
+      time += timBoard[i];
+  }
+
+  document.getElementById("channel").innerHTML = message;
+  document.getElementById("time").innerHTML = time;
+  document.getElementById("input").value = "";
+
+}
+</script>
 
 </body>
 </html>
