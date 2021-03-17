@@ -1,0 +1,278 @@
+<html>
+<style>
+input[type = text], select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid black;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button[type = submit] {
+  width: 100%;
+  background-color: grey;
+  color: white;
+  padding: 12px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+body{
+  padding:0;
+  margin:0;
+}
+
+a{
+  text-decoration: none;
+  color: green;
+}
+
+
+#header{
+  width: auto;
+  height: 30px;
+  border-bottom-style: solid;
+  border-width:2px;
+  padding-top:5px;
+
+}
+
+#profile{
+  width: 25%;
+  height: 20px;
+  float: left;
+  padding-left:10px;
+}
+
+#quackit{
+  width: 45%;
+  height: 20px;
+  float: left;
+  text-align: center;
+}
+
+#friends{
+  width: 10%;
+  height: 20px;
+  float: left;
+}
+
+#groups{
+  width: 10%;
+  height: 20px;
+  float: left;
+}
+
+#search{
+  width: 5%;
+  height: 20px;
+  float: left;
+}
+
+#section{
+  height:150px;
+  border-bottom-style:solid;
+  border-width: 4px;
+  padding-top:25px;
+  padding-bottom:25px;
+}
+
+
+#active{
+  font-weight: bold;
+  font-size: 25px;
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
+#recommended{
+  font-weight: bold;
+  font-size: 25px;
+  width:40%;
+  margin-left: 50px;
+  float:left;
+}
+
+#recfriends{
+  font-weight: bold;
+  font-size: 25px;
+  width:40%;
+  margin-right: 50px;
+  float:right;
+}
+
+#line{
+  border-style: solid;
+  height: 195px;
+  width: 0px;
+  margin-top: -25px;
+  float:left;
+  margin-left:5%;
+}
+
+
+#box{
+  background-color: #fcfc8d;
+  border-radius: 10px;
+  height: 95px;
+  width: auto;
+  padding:15px;
+  padding-bottom:0px;
+}
+
+#minibox{
+  background-color: green;
+  border-radius: 10px;
+  height: 100px;
+  width: auto;
+  padding:15px;
+  padding-bottom:0px;
+}
+
+#item{
+  height:30px;
+  border-radius: 10px;
+  border-style:solid;
+  border-color:green;
+  margin-bottom:5px;
+  padding: 2px;
+}
+
+#item:hover{
+  background-color:green;
+  color:#fcfc8d;
+}
+
+#groupname{
+  background-color: green;
+  color:#fcfc8d;
+  border-radius: 30px;
+  width: 15%;
+  text-align: center;
+  margin-bottom: 15px;
+  float:left;
+}
+
+#minibox #groupname{
+  width:100%;
+  background-color:#fcfc8d;
+  color: green;
+  border-style: solid;
+}
+
+#minibox #groupname:hover{
+  background-color: green;
+  color: #fcfc8d;
+}
+
+#toppost{
+  border-radius: 30px;
+  width: 85%;
+  text-align: center;
+  margin-bottom: 15px;
+  float:left;
+}
+
+
+
+</style>
+
+<body style='color:green; font-family:"Tahoma";'>
+
+  <div id='header'>
+
+    <div id='profile'><a href='profile.html'>Profile</a></div>
+    <div id='quackit'>Quackit</div>
+    <div id='friends'>Friends</div>
+    <div id='groups'>Groups</div>
+    <div id='search'>Search</div>
+  </div>
+
+  <div id='section'>
+    <div id='active'>
+      <div>Active Groups</div>
+      <div id='box'>
+        <div id='item'>
+          <div id='groupname'>Movies</div>
+          <div id='toppost'>"Whats your favorite movie?"</div>
+        </div>
+        <div id='item'>
+          <div id='groupname'>Art</div>
+          <div id='toppost'>"Van Gogh slaps"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id='section'>
+    <div id='active'>
+      <div>Active Friends</div>
+      <div id='box'>
+        <div id='item'>
+          <div id='groupname'>Drew posted</div>
+          <div id='toppost'>"I like pineapples"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id='section'>
+    <div id='Recommended'>
+      <div>Recommended</div>
+      <div id='minibox'>
+        <div id='groupname'>Fruit</div>
+        <div id='groupname'>Card Games</div>
+      </div>
+    </div>
+
+    <div id='line'></div>
+
+      <div id='recfriends'>
+        <div>Friends of Friends</div>
+        <div id='minibox'>
+          <div id='groupname'>Barrack</div>
+          <div id='groupname'>Michelle</div>
+        </div>
+      </div>
+    </div>
+
+<script>
+
+var msgBoard = [];
+var timBoard = [];
+var pos = 0;
+
+function sendMessage() {
+  var message = "";
+  var time = "";
+  var d = new Date();
+  var t = d.toLocaleString();
+  var tab = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+
+  msgBoard[pos] = (document.getElementById("input").value + tab + "<br>");
+  timBoard[pos] = t + "<br>";
+
+  pos++;
+  if(pos >= 10)
+    pos = 0;
+
+  for(var i = pos; i < msgBoard.length; i ++ ){
+    message += msgBoard[i];
+    time += timBoard[i];
+  }
+  for(var i = 0; i < pos; i ++){
+      message += msgBoard[i];
+      time += timBoard[i];
+  }
+
+  document.getElementById("channel").innerHTML = message;
+  document.getElementById("time").innerHTML = time;
+  document.getElementById("input").value = "";
+
+}
+</script>
+</html>

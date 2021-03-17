@@ -19,7 +19,7 @@ app = Flask(__name__)
 def home():
     """Return a simple HTML page."""
     print("Hit the route!")
-    return render_template("index.html")
+    return render_template("home.html")
 
 
 if __name__ == "__main__":
