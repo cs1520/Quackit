@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from google.cloud import datastore
 #from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -21,6 +22,24 @@ def home():
     print("Hit the route!")
     return render_template("home.html")
 
+
+@app.route("/login")
+def login():
+    
+    print("Login page")
+    return render_template("login.html")
+
+@app.route("/register")
+def register():
+    
+    print("Create Account page")
+    return render_template("register.html")
+
+@app.route("/profile")
+def profile():
+    
+    print("Profile page")
+    return render_template("profile.html")
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8080, debug=True)
