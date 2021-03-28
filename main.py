@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from google.cloud import datastore
+import hashlib
 #from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -14,7 +15,7 @@ app = Flask(__name__)
 #    def __msgout__(self):
 #        return ("%s: %s" + "visible to: %s"
 #                % (self.username, self.message, self.visibility))
-
+data = datastore.Client()
 
 @app.route("/")
 def home():
@@ -23,19 +24,47 @@ def home():
     return render_template("home.html")
 
 
-@app.route("/login")
+@app.route("/login", methods = ["GET"])
 def login():
     
     print("Login page")
     return render_template("login.html")
 
-@app.route("/register")
-def register():
+@app.route("/login", methods = ["POST"])
+def login_data():
     
-    print("Create Account page")
+    username = request.form.get("username")
+    password = request.form.get("password")
+    print(username + " " + password)
+    return render_template("login.html")
+
+@app.route("/register", methods = ["POST"])
+def register_data():
+    
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    user_key = data.key("UserCredential", username)
+    user = datastore.Entity(key=user_key)
+    user["username"] = username
+    user["hashPassword"] = hash_password(password)
+    data.put(user)    
+
+    return render_template("home.html")
+
+def hash_password(password):
+    """This will give us a hashed password that will be extremlely difficult to 
+    reverse.  Creating this as a separate function allows us to perform this
+    operation consistently every time we use it."""
+    encoded = password.encode("utf-8")
+    return hashlib.pbkdf2_hmac("sha256", encoded, 100000)
+
+@app.route("/register", methods = ["GET"])
+def register():
+    print("Register Page")
     return render_template("register.html")
 
-@app.route("/profile")
+@app.route("/profile", methods = ["GET"])
 def profile():
     
     print("Profile page")
