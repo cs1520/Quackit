@@ -64,41 +64,5 @@ div {
     </div>
   </div>
 
-<script>
-
-var msgBoard = [];
-var timBoard = [];
-var pos = 0;
-
-function sendMessage() {
-  var message = "";
-  var time = "";
-  var d = new Date();
-  var t = d.toLocaleString();
-  var tab = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-
-  msgBoard[pos] = (document.getElementById("input").value + tab + "<br>");
-  timBoard[pos] = t + "<br>";
-
-  pos++;
-  if(pos >= 10)
-    pos = 0;
-
-  for(var i = pos; i < msgBoard.length; i ++ ){
-    message += msgBoard[i];
-    time += timBoard[i];
-  }
-  for(var i = 0; i < pos; i ++){
-      message += msgBoard[i];
-      time += timBoard[i];
-  }
-
-  document.getElementById("channel").innerHTML = message;
-  document.getElementById("time").innerHTML = time;
-  document.getElementById("input").value = "";
-
-}
-</script>
-
 </body>
 </html>

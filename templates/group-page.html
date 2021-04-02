@@ -1,0 +1,79 @@
+<html>
+
+<head>
+  <title>Quacker</title>
+  <link href="/static/style.css" rel="stylesheet">
+</head>
+<body style='color:green; font-family:"Tahoma";'>
+
+  <div id='header'>
+
+    <div id='profile'><a href='/profile'>Profile</a></div>
+    <div id='quackit'><a href='/'>Quackit</a></div>
+    <div id='friends'>Friends</div>
+    <div id='groups'><a href='/group'>Groups</a></div>
+    <div id='search'>Search</div>
+  </div>
+
+
+  <div id="pageart">
+    <img src="https://www.innovationnewsnetwork.com/wp-content/uploads/2021/02/Primordial-galaxy-696x392.jpg" alt="PageArt">
+    <div title>Title</div>
+  </div>
+
+
+
+
+    <div>
+      <label for="input">Enter your message:</label>
+      <input type="text" id="input" name="message" placeholder="Your message...">
+
+      <button type = submit onclick="sendMessage()">Send Message</button>
+    </div>
+  </form>
+
+  <br>
+
+  <div style="height: auto; width: auto; overflow: auto;">  
+    <div style="height: auto; width: 70%; float: left; overflow: auto;">
+        <p id = "channel">Message goes here</p>
+    </div>
+    <div style="height: auto; width: auto; margin-left: 70%; overflow: auto;">
+        <p id = "time">Time goes here</p>
+    </div>
+  </div>
+
+<script>
+var msgBoard = [];
+var timBoard = [];
+var pos = 0;
+
+function sendMessage() {
+
+    data()
+
+}
+
+function renderPage(d) {
+    document.getElementById("channel").innerHTML = d["Color"];
+}
+
+function data(){
+    fetch(`/groupdata`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        });
+}
+
+
+window.onload = function() {
+
+    console.log("Hello");
+
+    this.data();
+}
+</script>
+
+</body>
+</html>
