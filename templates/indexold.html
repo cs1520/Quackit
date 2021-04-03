@@ -1,0 +1,68 @@
+<html>
+<style>
+input[type = text], select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid black;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button[type = submit] {
+  width: 100%;
+  background-color: grey;
+  color: white;
+  padding: 12px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+div {
+  border-radius: 10px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+</style>
+
+<head>
+  <title>Quacker</title>
+  <link href="/static/style.css" rel="stylesheet">
+</head>
+<body>
+  <h1>Welcome to Quacker!</h1>
+  <p>Start chatting with others by sending a message</p>
+
+    <div>
+      <label for="input">Enter your message:</label>
+      <input type="text" id="input" name="message" placeholder="Your message...">
+
+<!--
+      <label for="vsblty">Make message visible to</label>
+      <select id="vsblty" name="visibility">
+        <option value="everyone">Everyone</option>
+        <option value="followers">Followers</option>
+        <option value="friends">Friends</option>
+      </select>
+-->
+      <button type = submit onclick="sendMessage()">Send Message</button>
+    </div>
+  </form>
+
+  <br>
+
+  <div style="height: auto; width: auto; overflow: auto;">  
+    <div style="height: auto; width: 70%; float: left; overflow: auto;">
+        <p id = "channel">Message goes here</p>
+    </div>
+    <div style="height: auto; width: auto; margin-left: 70%; overflow: auto;">
+        <p id = "time">Time goes here</p>
+    </div>
+  </div>
+
+</body>
+</html>

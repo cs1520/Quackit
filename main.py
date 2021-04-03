@@ -11,7 +11,7 @@ data = datastore.Client()
 def home():
     """Return a simple HTML page."""
     print("Hit the route!")
-    return render_template("home.html")
+    return render_template("index.html")
 
 
 @app.route("/login", methods = ["GET"])
@@ -34,18 +34,25 @@ def login_data():
 
     return render_template("login.html")
 
-@app.route("/group")
-def grouppage():
-    return render_template("group-page.html")
+@app.route("/groups")
+def groupnav():
+    return render_template("group-nav.html")
 
 
-@app.route("/groupdata", methods = ["GET"])
-def group():
+@app.route("/groups/<group>")
+def grouppage(group):
+    return render_template("group-page.html", name=group)
+
+
+
+@app.route("/groupdata/<title>", methods = ["GET"])
+def group(title):
 
     gd = data.query(kind="Group")
+    gd.add_filter("Title","=",title)
     groupData = gd.fetch()
 
-    x = [ {"color": i["color"]} for i in groupData]
+    x = [{"title": i["Title"], "primary": i["PrimColor"], "secondary": i["SecColor"], "image": i["Image"]} for i in groupData]
     return jsonify(x)
     
 

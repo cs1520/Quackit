@@ -1,4 +1,23 @@
 <html>
+
+<style>
+
+#search{
+    height: 30px;
+    width: 100%;
+}
+
+#alloptions{
+    overflow: scroll;
+    height:300px;
+    width:100%;
+    margin:auto;
+    border-style: solid;
+    padding: 15px;
+}
+
+</style>
+
 <head>
      <link href="/static/style.css" rel="stylesheet"></link>
 </head>
@@ -12,6 +31,18 @@
     <div id='friends'>Friends</div>
     <div id='groups'><a href='/group'>Groups</a></div>
     <div id='search'>Search</div>
+  </div>
+
+  <div id='searchbar'>
+    <input type="text" id="input" name="search" placeholder="search">
+  </div>
+
+  <div id='addgroup'>
+      <button type = submit onclick="createGroup()">Create New Group</button>
+  </div>
+
+  <div id="alloptions">
+    <div id="groupname"><a style='color: #fcfc8d' href='/groups/Space'>Space</a></div>
   </div>
 
   <div id='section'>
@@ -62,5 +93,13 @@
       </div>
     </div>
 
-<script src="/static/main.js"></script>
+<script src="/static/main.js">
+
+function createGroup() {
+
+    
+
+}
+
+</script>
 </html>
