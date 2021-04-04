@@ -88,7 +88,7 @@ def register_data():
     user["hashPassword"] = hash_password(password, salt)
     data.put(user)    
 
-    return render_template("home.html")
+    return render_template("index.html")
 
 def hash_password(password, salt):
     """This will give us a hashed password that will be extremlely difficult to 
@@ -99,20 +99,32 @@ def hash_password(password, salt):
     return hashlib.pbkdf2_hmac("sha256", encoded, salt, 100000)
 
 def verify_password(username, password):
-        user = data.query(kind = 'UserCredentail')
+        user = data.query(kind = 'UserCredential')
         user.add_filter('username', '=', username)
         result = user.fetch()
 
-        dataU = result.next()
-        dataP = result.next()
-        dataS = result.next()
+        if(result == None):
+            print("result is null")
+            return False
 
-        print("result stuff: U: " + dataU + " P: " + dataP + "S: "  + dataS)
+        userData = [{"U": i["username"], "P": i["hashPassword"], "S": i["salt"]} for i in result]
 
-        if(dataU == username):
-            login_attempt = hash_password(password, dataS)
-            if(login_attempt == dataP + dataS):
+        print(userData[0]["U"])
+        print(userData[0]["P"])
+        print(userData[0]["S"])
+
+        userSalt = str(userData[0]["S"])
+        print(userSalt)
+
+        if(userData[0]["U"] == username):
+            print("Username Match!")
+            login_attempt = hash_password(password, userData[0]["S"])
+            if(login_attempt == userData[0]["P"] + userData[0]["S"]):
+                print("Password Match!")
                 return True #I don't know what to return
+            else:
+                print("Password Mismatch!")
+                return None
 
         else:
             return None
