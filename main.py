@@ -49,13 +49,30 @@ def grouppage(group):
 def group(title):
 
     gd = data.query(kind="Group")
-    gd.add_filter("Title","=",title)
+    if title != "NULL":
+        gd.add_filter("Title","=",title)
     groupData = gd.fetch()
 
-    x = [{"title": i["Title"], "primary": i["PrimColor"], "secondary": i["SecColor"], "image": i["Image"]} for i in groupData]
+    x = [{"title": i["Title"], "primary": i["PrimColor"], "secondary": i["SecColor"], "image": i["Banner"]} for i in groupData]
     return jsonify(x)
     
 
+@app.route("/groupcreate", methods = ["POST"])
+def groupcreate():
+    groupT = request.form.get("title")
+    groupB = request.form.get("banner")
+    groupP = request.form.get("primary")
+    groupS = request.form.get("secondary")
+
+    group_key = data.key("Group", groupT)
+    group = datastore.Entity(key=group_key)
+    group["Title"] = groupT
+    group["Banner"] = groupB
+    group["PrimColor"] = groupP
+    group["SecColor"] = groupS
+    data.put(group)
+
+    return jsonify(group)
 
 @app.route("/register", methods = ["POST"])
 def register_data():

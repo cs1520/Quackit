@@ -16,6 +16,12 @@
     padding: 15px;
 }
 
+#groupForm{
+    padding-left:30px;
+    padding-right:30px;
+    border-style: solid;
+}
+
 </style>
 
 <head>
@@ -29,7 +35,7 @@
     <div id='profile'><a href='/profile'>Profile</a></div>
     <div id='quackit'><a href='/'>Quackit</a></div>
     <div id='friends'>Friends</div>
-    <div id='groups'><a href='/group'>Groups</a></div>
+    <div id='groups'><a href='/groups'>Groups</a></div>
     <div id='search'>Search</div>
   </div>
 
@@ -38,67 +44,75 @@
   </div>
 
   <div id='addgroup'>
-      <button type = submit onclick="createGroup()">Create New Group</button>
+    <button id='create' type = submit onclick="showGroup()">Create New Group</button>
+    <div id="groupForm" style="display: none;">
+        <input type="text" id="input" name="title" placeholder="Enter Group Title">
+        <input type="text" id="input" name="banner" placeholder="Enter Banner Image URL">
+        <input type="text" id="input" name="primary" placeholder="Enter Primary Color Code">
+        <input type="text" id="input" name="secondary" placeholder="Enter Secondary Color Code">
+        <button type = submit onclick="createGroup()">Create New Group</button>
+    </div>
   </div>
 
   <div id="alloptions">
-    <div id="groupname"><a style='color: #fcfc8d' href='/groups/Space'>Space</a></div>
+    <!--<div id="groupname"><a style='color: #fcfc8d' href='/groups/Space'>Space</a></div>-->
   </div>
 
-  <div id='section'>
-    <div id='active'>
-      <div>Active Groups</div>
-      <div id='box'>
-        <div id='item'>
-          <div id='groupname'>Movies</div>
-          <div id='toppost'>"Whats your favorite movie?"</div>
-        </div>
-        <div id='item'>
-          <div id='groupname'>Art</div>
-          <div id='toppost'>"Van Gogh slaps"</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<script>
 
-  <div id='section'>
-    <div id='active'>
-      <div>Active Friends</div>
-      <div id='box'>
-        <div id='item'>
-          <div id='groupname'>Drew posted</div>
-          <div id='toppost'>"I like pineapples"</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id='section'>
-    <div id='Recommended'>
-      <div>Recommended</div>
-      <div id='minibox'>
-        <div id='groupname'>Fruit</div>
-        <div id='groupname'>Card Games</div>
-      </div>
-    </div>
-
-    <div id='line'></div>
-
-      <div id='recfriends'>
-        <div>Friends of Friends</div>
-        <div id='minibox'>
-          <div id='groupname'>Barrack</div>
-          <div id='groupname'>Michelle</div>
-        </div>
-      </div>
-    </div>
-
-<script src="/static/main.js">
+function showGroup() {
+    console.log("hello")
+    document.getElementById("groupForm").style.display = "block";
+    document.getElementById("create").style.display = "none";
+}
 
 function createGroup() {
+        let data = new URLSearchParams();
+        data.append("title", document.getElementsByName("title")[0].value);
+        data.append("banner",document.getElementsByName("banner")[0].value);
+        data.append("primary",document.getElementsByName("primary")[0].value);
+        data.append("secondary",document.getElementsByName("secondary")[0].value);
+        fetch(`/groupcreate`, { method: 'POST', body: data })
+            .then((data) => {
+                console.log(data);
+            });
 
-    
+        document.getElementById("groupform").style.display = "none";
+        document.getElementById("create").style.display = "block";
+    }
 
+function renderList(d) {
+
+    let allOptions = document.getElementById("alloptions");
+
+    console.log("hello");
+
+    for(var i = 0; i < d.length; i ++){
+        var name = document.createElement("DIV");
+        name.id = 'groupname';
+        var link = document.createElement("A");
+        link.href = "/groups/" + d[i].title;
+        link.innerText = d[i].title;
+        link.style.color = "#fcfc8d"
+        name.appendChild(link);
+        allOptions.appendChild(name);
+    }
+
+}
+
+function data(){
+    fetch("/groupdata/NULL")
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            renderList(data);
+        });
+}
+
+
+window.onload = function() {
+
+    this.data();
 }
 
 </script>
