@@ -3,6 +3,34 @@
 <body>
     <h1>PLACEHOLDER FOR PROFILE PAGE</h1>
     <div id = login><a href = '/login'>Login</a></div>
+
+    <div id = hello-message><p>Hello, User</p> </div>
+
+
+
+<script type='text/javascript'>
+    var title = '{{ name }}'
+
+    function renderPage(d) {
+        document.getElementById("hello-message").innerText = "Hello, " + title
+    }
+
+function data(){
+    var url = "/profile/" + title;
+    console.log(url);
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data[0]);
+            renderPage(data[0]);
+        });
+}
+
+    window.onload = function() {
+
+    this.data();
+}
+</script>
 </body>
 
 </html>

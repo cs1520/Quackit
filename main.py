@@ -31,8 +31,9 @@ def login_data():
         print(username + " has logged in successfully")
     else:
         print("Login failed")
+        return render_template("login.html")
 
-    return render_template("login.html")
+    return render_template("profile.html", name = username)
 
 @app.route("/groups")
 def groupnav():
@@ -97,7 +98,7 @@ def show_messages(group):
     msg.add_filter("group_key","=",group_key)
     msg.order = "creation_time"
     messages = msg.fetch()
-    output = [{"Message":x:["Message"]} for x in messages]
+    output = [{"Message":x["Message"]} for x in messages]
 
     return jsonify(output)
 
@@ -113,7 +114,8 @@ def register_data():
     user["username"] = username
     salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("utf-8")
     user["salt"] = salt
-    user["hashPassword"] = hash_password(password, salt)
+    #user["hashPassword"] = hash_password(password, salt)
+    user["hashPassword"] = password
     data.put(user)    
 
     return render_template("index.html")
@@ -146,8 +148,10 @@ def verify_password(username, password):
 
         if(userData[0]["U"] == username):
             print("Username Match!")
-            login_attempt = hash_password(password, userData[0]["S"])
-            if(login_attempt == userData[0]["P"] + userData[0]["S"]):
+            #login_attempt = hash_password(password, userData[0]["S"])
+            login_attempt = password
+            #if(login_attempt == userData[0]["P"] + userData[0]["S"]):
+            if(login_attempt == userData[0]["P"]):
                 print("Password Match!")
                 return True #I don't know what to return
             else:
@@ -163,11 +167,16 @@ def register():
     print("Register Page")
     return render_template("register.html")
 
-@app.route("/profile", methods = ["GET"])
+@app.route("/profile/", methods = ["GET"])
 def profile():
     
     print("Profile page")
     return render_template("profile.html")
+
+@app.route("/profile/<user>", methods = ["GET"])
+def profile_user(username):
+    
+    return render_template("profile.html", name = username)
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8080, debug=True)
