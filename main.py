@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 from google.cloud import datastore
+from datetime import datetime
 import hashlib
 import os
 
 app = Flask(__name__)
-
 data = datastore.Client()
 
 @app.route("/")
@@ -73,6 +73,34 @@ def groupcreate():
     data.put(group)
 
     return jsonify(group)
+
+@app.route("/groups/<group>/messages", methods = ["POST"])
+def messagecreate(group):
+    messageM = request.form.get("message")
+    messageU = request.form.get("username")
+    
+    group_key = data.key("Group", group)
+    message = data.key("Message")
+    message["Message"] = messageM
+    message["User"] = messageU
+    message["CreationTime"] = datetime.now()
+    message["group_key"] = group_key
+    data.put(message)
+
+    return jsonify(message)
+
+@app.route("/groups/<group>/messages", methods = ["GET"])
+def show_messages(group):
+    group_key = data.key("Group", group)
+
+    msg = data.key(kind="Message")
+    msg.add_filter("group_key","=",group_key)
+    msg.order = "creation_time"
+    messages = msg.fetch()
+    output = [{"Message":x:["Message"]} for x in messages]
+
+    return jsonify(output)
+
 
 @app.route("/register", methods = ["POST"])
 def register_data():

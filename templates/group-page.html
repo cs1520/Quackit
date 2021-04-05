@@ -32,6 +32,23 @@ img{
     padding-left: 20px;
 }
 
+#messageboard{
+  width: 70%;
+  height: 100%;
+  float: right;
+  border-left-style: solid;
+  padding-right: 20px;
+}
+
+#msgdisplay{
+    overflow: scroll;
+    height:300px;
+    width:100%;
+    margin:auto;
+    border-style: solid;
+    padding: 15px;
+}
+
 #about{
     width: 100%;
     height: 50%;
@@ -70,8 +87,60 @@ img{
     <div id="rules">Rules</div>
 </div>
 
+<div id="messageboard">
+  <div id="messageinput">
+    <input type = "text" id="input" name = "message" placeholder="Type Message Here...">
+    <button type = submit onclick="createMessage()">Post Message</button>
+  </div>
+  <div id="msgdisplay">
+    <template id="message-template">
+      <div class="column row">
+        <div class="col-3"></div>
+        <p class="col-9 border border-primary">Message Text</p>
+      </div>
+    </template>
+    <div class="message-container container">
+    </div>
+  </div>
+</div>
+
 <script type='text/javascript'>
 var title = '{{ name }}'
+
+function createMessage() {
+    let data = new URLSearchParams();
+    data.append("message", document.getElementsByName("message")[0].value);
+    fetch(`/groups/<group>/messages`, {method: 'POST', body: data})
+        .then((data) => {
+            console.log(data);
+        });
+      
+    let messageContainer = existing.querySelector(".message-container");
+    let groupname = document.getElementById("grouptitle").innerText
+    loadMessages(messageContainer, groupname)
+}
+
+function renderMessage(container, message) {
+  let messageTemplate = document.getElementById("message-template");
+  let node = messageTemplate.content.firstElementChild.cloneNode(true);
+  let p = node.querySelector("p");
+  p.innerText = message["Message"];
+
+  container.appendChild(node);
+}
+
+function loadMessages(container, group) {
+  fetch(`/groups/<group>/messages`)
+    .then(response => response.json())
+    .then(data => {
+      container.innerHTML = "";
+      for(i=0; i<data.length; i++){
+        renderMessage(container, data[i])
+      }
+      console.log(data)
+    });
+
+}
 
 function sendMessage() {
 
@@ -86,12 +155,14 @@ function renderPage(d) {
     document.getElementById("body").style.backgroundColor = d.secondary;
     document.getElementById("image").src = d.image;
 
+    let messageContainer = existing.querySelector(".message-container");
+    loadMessages(messageContainer, d.title);
+
     var a = document.getElementsByTagName('a')
 
     for(i =0; i < a.length; i++){
         a[i].style.color = d.primary;
     }
-
 }
 
 function data(){
