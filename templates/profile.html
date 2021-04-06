@@ -3,25 +3,30 @@
 <body>
     <h1>PLACEHOLDER FOR PROFILE PAGE</h1>
     <div id = login><a href = '/login'>Login</a></div>
+    <div id = logout><a href = '/logout'>Logout</a></div>
 
-    <div id = hello-message><p>Hello, User</p> </div>
+    <div id = hellomessage>Text</div>
 
 
 
 <script type='text/javascript'>
-    var title = '{{ name }}'
+    var username = '{{ name }}'
+    document.getElementById("hellomessage").innerText = "Hello, " + username;
 
-    function renderPage(d) {
-        document.getElementById("hello-message").innerText = "Hello, " + title
+ /*   function renderPage(d) {
+        
+        window.alert("test");
     }
 
 function data(){
-    var url = "/profile/" + title;
+    //window.alert("test");
+    var url = "/profile/";
     console.log(url);
     fetch(url)
-        .then(response => response.json())
+        .then(response => response.text())
         .then(data => {
             console.log(data[0]);
+           
             renderPage(data[0]);
         });
 }
@@ -29,7 +34,8 @@ function data(){
     window.onload = function() {
 
     this.data();
-}
+    
+}*/
 </script>
 </body>
 

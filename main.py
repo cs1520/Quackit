@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from google.cloud import datastore
 from datetime import datetime
 import hashlib
 import os
 
 app = Flask(__name__)
+app.secret_key = b"20072012f35b38f51c782e21b478395891bb6be23a61d70a"
 data = datastore.Client()
 
 @app.route("/")
@@ -17,7 +18,6 @@ def home():
 @app.route("/login", methods = ["GET"])
 def login():
     
-    print("Login page")
     return render_template("login.html")
 
 @app.route("/login", methods = ["POST"])
@@ -29,11 +29,11 @@ def login_data():
 
     if(verify_password(username, password)):
         print(username + " has logged in successfully")
+        return redirect("/")
     else:
         print("Login failed")
         return render_template("login.html")
 
-    return render_template("profile.html", name = username)
 
 @app.route("/groups")
 def groupnav():
@@ -153,6 +153,7 @@ def verify_password(username, password):
             #if(login_attempt == userData[0]["P"] + userData[0]["S"]):
             if(login_attempt == userData[0]["P"]):
                 print("Password Match!")
+                session["user"] = username
                 return True #I don't know what to return
             else:
                 print("Password Mismatch!")
@@ -167,16 +168,31 @@ def register():
     print("Register Page")
     return render_template("register.html")
 
-@app.route("/profile/", methods = ["GET"])
+@app.route("/profile/")
 def profile():
     
-    print("Profile page")
-    return render_template("profile.html")
+    user = get_user()
+    if user == None:
+            return redirect("/login")
+    else:
+        #url_for('profile', user)
+        return render_template("profile.html", name=user)
 
-@app.route("/profile/<user>", methods = ["GET"])
-def profile_user(username):
+"""@app.route("/profile/<user>")
+def profile_user(user):
+    username = get_user()
+    return render_template("profile.html", name=username)"""
     
-    return render_template("profile.html", name = username)
+
+@app.route("/logout")
+def logout():
+    session.pop("user", None)
+    return redirect("/")
+
+def get_user():
+    """If our session has an identified user (i.e., a user is signed in), then
+    return that username."""
+    return session.get("user", None)    
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=8080, debug=True)
