@@ -93,14 +93,6 @@ img{
     <button type = submit onclick="createMessage()">Post Message</button>
   </div>
   <div id="msgdisplay">
-    <template id="message-template">
-      <div class="column row">
-        <div class="col-3"></div>
-        <p class="col-9 border border-primary">Message Text</p>
-      </div>
-    </template>
-    <div class="message-container container">
-    </div>
   </div>
 </div>
 
@@ -110,36 +102,36 @@ var title = '{{ name }}'
 function createMessage() {
     let data = new URLSearchParams();
     data.append("message", document.getElementsByName("message")[0].value);
-    fetch(`/groups/<group>/messages`, {method: 'POST', body: data})
+    data.append("user", document.getElementById("grouptitle"));
+    var url = "/groups/"+title+"/messagecreate";
+    fetch(url, {method: 'POST', body: data})
         .then((data) => {
             console.log(data);
         });
       
-    let messageContainer = existing.querySelector(".message-container");
-    let groupname = document.getElementById("grouptitle").innerText
-    loadMessages(messageContainer, groupname)
+    loadMessages();
 }
 
-function renderMessage(container, message) {
-  let messageTemplate = document.getElementById("message-template");
-  let node = messageTemplate.content.firstElementChild.cloneNode(true);
-  let p = node.querySelector("p");
-  p.innerText = message["Message"];
-
-  container.appendChild(node);
+function renderMessages(d) {
+    console.log("Hello")
+    let msgdisplay = document.getElementById("msgdisplay");
+    for(var i=0;i<d.length;i++){
+        var msgbox = document.createElement("DIV");
+        msgbox.id = "msgbox";
+        var msg = document.createElement("p")
+        msg.innerText = d[i].Message;  
+        msgdisplay.appendChild(msg);
+    }
 }
 
-function loadMessages(container, group) {
-  fetch(`/groups/<group>/messages`)
-    .then(response => response.json())
-    .then(data => {
-      container.innerHTML = "";
-      for(i=0; i<data.length; i++){
-        renderMessage(container, data[i])
-      }
-      console.log(data)
-    });
-
+function loadMessages() {
+    var url = "/groupdata/"+title+"/messages";
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            renderMessages(data)
+        });
 }
 
 function sendMessage() {
@@ -155,8 +147,7 @@ function renderPage(d) {
     document.getElementById("body").style.backgroundColor = d.secondary;
     document.getElementById("image").src = d.image;
 
-    let messageContainer = existing.querySelector(".message-container");
-    loadMessages(messageContainer, d.title);
+    loadMessages();
 
     var a = document.getElementsByTagName('a')
 
