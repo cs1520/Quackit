@@ -102,26 +102,49 @@ var title = '{{ name }}'
 function createMessage() {
     let data = new URLSearchParams();
     data.append("message", document.getElementsByName("message")[0].value);
-    data.append("user", document.getElementById("grouptitle"));
+    data.append("group", document.getElementById("grouptitle"));
     var url = "/groups/"+title+"/messagecreate";
     fetch(url, {method: 'POST', body: data})
         .then((data) => {
             console.log(data);
         });
-      
-    loadMessages();
+
+    //loadNewMessage();    
+    let msgdisplay = document.getElementById("msgdisplay");
+    var msgbox = document.createElement("DIV");
+    var msg = document.createElement("p");
+    msg.innerText = document.getElementsByName("message")[0].value;
+    msgdisplay.appendChild(msg);
+}
+
+function renderNewMessage(d){
+    let msgdisplay = document.getElementById("msgdisplay");
+    var msgbox = document.createElement("DIV");
+    msgbox.id = "msgbox";
+    var msg = document.createElement("p");
+    msg.innerText = d[0].user+": "+d[0].text;
+    msgdisplay.appendChild(msg);
 }
 
 function renderMessages(d) {
-    console.log("Hello")
     let msgdisplay = document.getElementById("msgdisplay");
     for(var i=0;i<d.length;i++){
         var msgbox = document.createElement("DIV");
         msgbox.id = "msgbox";
         var msg = document.createElement("p")
-        msg.innerText = d[i].Message;  
+        msg.innerText = d[i].user + ": "+ d[i].text;  
         msgdisplay.appendChild(msg);
     }
+}
+
+function loadNewMessage(){
+    var url = "/groupdata/"+title+"/messages";
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            renderNewMessage(data)
+        })
 }
 
 function loadMessages() {

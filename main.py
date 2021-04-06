@@ -80,28 +80,26 @@ def messagecreate(group):
     messageM = request.form.get("message")
     messageU = get_user()
     
-    group_key = data.key("Group", group)
-    message_key = data.key("Message",messageM)
+    message_key = data.key("Message")
     message = datastore.Entity(key=message_key)
     message["Text"] = messageM
     message["User"] = messageU
     message["CreationTime"] = datetime.now()
-    message["group_key"] = group_key
+    message["GroupTitle"] = group
     data.put(message)
 
     print(message["Text"])
 
-    return jsonify({"Text": message["Text"], "User": message["User"], "CreationTime": message["CreationTime"]})
+    return jsonify(message)
 
 @app.route("/groupdata/<group>/messages", methods = ["GET"])
 def show_messages(group):
-    group_key = data.key("Group", group)
-
+    
     msg = data.query(kind="Message")
-    msg.add_filter("group_key","=",group_key)
-    msg.order = "creation_time"
+    msg.add_filter("GroupTitle","=",group)
+    #msg.order = "CreationTime"
     messages = msg.fetch()
-    output = [{"Message":x["Message"], "User":x["User"], "CreationTime": x["CreationTime"]} for x in messages]
+    output = [{"text":x["Text"], "user":x["User"], "creationtime": x["CreationTime"], "grouptitle": x["GroupTitle"]} for x in messages]
 
     print(output)
 
