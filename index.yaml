@@ -1,0 +1,7 @@
+indexes:
+
+- kind: Message
+  properties:
+  - name: GroupTitle
+  - name: CreationTime
+    direction: desc
