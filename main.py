@@ -94,14 +94,14 @@ def messagecreate(group):
 
 @app.route("/groupdata/<group>/messages", methods = ["GET"])
 def show_messages(group):
+
     
+    GroupTitle = group
     msg = data.query(kind="Message")
-    msg.add_filter("GroupTitle","=",group)
-    #msg.order = "CreationTime"
+    msg.add_filter("GroupTitle","=",GroupTitle)
+    msg.order = ["-CreationTime"]
     messages = msg.fetch()
     output = [{"text":x["Text"], "user":x["User"], "creationtime": x["CreationTime"], "grouptitle": x["GroupTitle"]} for x in messages]
-
-    print(output)
 
     return jsonify(output)
 

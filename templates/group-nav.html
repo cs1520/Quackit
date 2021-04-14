@@ -9,10 +9,9 @@
 
 #alloptions{
     overflow: scroll;
-    height:300px;
-    width:100%;
+    height:500px;
+    width:auto;
     margin:auto;
-    border-style: solid;
     padding: 15px;
 }
 
@@ -22,13 +21,46 @@
     border-style: solid;
 }
 
+#groupselect{
+  background-color: green;
+  color:#fcfc8d;
+  border-radius: 30px;
+  height: 30px;
+  width: auto;
+  text-align: center;
+  padding-top: 5px;
+  margin-bottom: 15px;
+  font-size: 20px;
+}
+
+#groupselect:hover{
+    background-color: white !important;
+    border-style: solid;
+    border-color: green;
+    box-shadow: inset 0 0 5px grey;
+}
+
+#input{
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid black;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+button[type=submit]:hover{
+    box-shadow: inset 0 0 5px black;
+}
+
 </style>
 
 <head>
      <link href="/static/style.css" rel="stylesheet"></link>
 </head>
 
-<body style='color:green; font-family:"Tahoma";'>
+<body style='color:green; background-color:#f6ffbd; font-family:"Tahoma";'>
 
   <div id='header'>
 
@@ -40,7 +72,7 @@
   </div>
 
   <div id='searchbar'>
-    <input type="text" id="input" name="search" placeholder="search">
+    <input type="text" id="input" name="search" placeholder="Search (non-functioning">
   </div>
 
   <div id='addgroup'>
@@ -77,8 +109,7 @@ function createGroup() {
                 console.log(data);
             });
 
-        document.getElementById("groupform").style.display = "none";
-        document.getElementById("create").style.display = "block";
+        location.reload();
     }
 
 function renderList(d) {
@@ -89,13 +120,15 @@ function renderList(d) {
 
     for(var i = 0; i < d.length; i ++){
         var name = document.createElement("DIV");
-        name.id = 'groupname';
+        name.id = 'groupselect';
+        name.style.backgroundColor = d[i].secondary;
         var link = document.createElement("A");
         link.href = "/groups/" + d[i].title;
-        link.innerText = d[i].title;
-        link.style.color = "#fcfc8d"
-        name.appendChild(link);
-        allOptions.appendChild(name);
+        name.innerText = d[i].title;
+        name.style.color = d[i].primary
+        link.style.color = d[i].primary
+        link.appendChild(name);
+        allOptions.appendChild(link);
     }
 
 }
