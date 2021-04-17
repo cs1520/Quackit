@@ -81,6 +81,18 @@ button[type=submit]:hover{
     box-shadow: inset 0 0 5px black;
 }
 
+#delete{
+    width:auto;
+    height:18px;
+    float:right;
+    border-style:hidden;
+}
+
+#delete:hover{
+    border-style:dashed;
+    border-color:black;
+}
+
 </style>
 
 
@@ -120,6 +132,10 @@ button[type=submit]:hover{
 
 <script type='text/javascript'>
 var title = '{{ name }}'
+var user = '{{ user }}'
+var owner = null;
+var prim = null;
+var sec = null;
 
 function createMessage() {
     let data = new URLSearchParams();
@@ -155,9 +171,29 @@ function renderMessages(d) {
         var msgbox = document.createElement("DIV");
         msgbox.id = "msgbox";
         var msg = document.createElement("p")
-        msgbox.innerText = d[i].user + ": "+ d[i].text;  
+        msgbox.innerText = d[i].user + ": "+ d[i].text; 
+        if(owner == user){
+            var del = document.createElement("BUTTON");
+            del.type = 'button';
+            del.onclick = function() {deleteMessage(this.value)};
+            del.id = "delete";
+            del.innerText = "Delete"
+            del.style.color = prim;
+            del.style.backgroundColor = sec;
+            del.value = d[i].id;
+            msgbox.appendChild(del);
+            console.log("append")
+        } 
         msgdisplay.appendChild(msgbox);
     }
+}
+
+function deleteMessage(val){
+    var url = `/messagedelete/` + val
+    fetch(url, { method: 'POST', body: data })
+    .then((data) => {
+        console.log(data);
+    });
 }
 
 function loadNewMessage(){
@@ -193,6 +229,9 @@ function renderPage(d) {
     document.getElementById("body").style.color = d.primary;
     document.getElementById("body").style.backgroundColor = d.secondary;
     document.getElementById("image").src = d.image;
+    owner = d.owner;
+    prim = d.primary;
+    sec = d.secondary;
 
     loadMessages();
 
@@ -218,6 +257,7 @@ function data(){
 window.onload = function() {
 
     this.data();
+
 }
 </script>
 

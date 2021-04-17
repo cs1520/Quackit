@@ -19,6 +19,7 @@
     padding-left:30px;
     padding-right:30px;
     border-style: solid;
+    background-color: white;
 }
 
 #groupselect{
@@ -54,6 +55,19 @@ button[type=submit]:hover{
     box-shadow: inset 0 0 5px black;
 }
 
+#colorpick{
+    color:black;
+    width: 100%;
+    height: 10px;
+    padding: 15px;
+    padding-left:0px;
+}
+
+input[type=color]{
+    float:left;
+    width: 80%;
+}
+
 </style>
 
 <head>
@@ -80,8 +94,14 @@ button[type=submit]:hover{
     <div id="groupForm" style="display: none;">
         <input type="text" id="input" name="title" placeholder="Enter Group Title">
         <input type="text" id="input" name="banner" placeholder="Enter Banner Image URL">
-        <input type="text" id="input" name="primary" placeholder="Enter Primary Color Code">
-        <input type="text" id="input" name="secondary" placeholder="Enter Secondary Color Code">
+        <div id="colorpick">
+            <div style="width:20%; float:left;">Pick Primary Color :</div>
+            <input type="color" name="primary" value="#008000">
+        </div>
+        <div id="colorpick">
+            <div style="width:20%; float:left;">Pick Secondary Color :</div> 
+            <input type="color" name="secondary" value="#fcfc8d">
+        </div>
         <button type = submit onclick="createGroup()">Create New Group</button>
     </div>
   </div>

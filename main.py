@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from google.cloud import datastore
-from datetime import datetime
+from datetime import datetime, timedelta
 import hashlib
 import os
 
@@ -42,7 +42,7 @@ def groupnav():
 
 @app.route("/groups/<group>")
 def grouppage(group):
-    return render_template("group-page.html", name=group)
+    return render_template("group-page.html", name=group, user=get_user())
 
 
 
@@ -54,7 +54,7 @@ def group(title):
         gd.add_filter("Title","=",title)
     groupData = gd.fetch()
 
-    x = [{"title": i["Title"], "primary": i["PrimColor"], "secondary": i["SecColor"], "image": i["Banner"]} for i in groupData]
+    x = [{"title": i["Title"], "primary": i["PrimColor"], "secondary": i["SecColor"], "image": i["Banner"], "owner":i["Owner"] } for i in groupData]
     return jsonify(x)
     
 
@@ -71,6 +71,7 @@ def groupcreate():
     group["Banner"] = groupB
     group["PrimColor"] = groupP
     group["SecColor"] = groupS
+    group["Owner"] = get_user()
     data.put(group)
 
     return jsonify(group)
@@ -92,16 +93,24 @@ def messagecreate(group):
 
     return jsonify(message)
 
+@app.route("/messagedelete/<int:messageid>", methods = ["POST"])
+def delete_messages(messageid):
+    message_key = data.key("Message",messageid)
+    print(message_key)
+    data.delete(message_key)
+
+    return 'deleted'
+
+
 @app.route("/groupdata/<group>/messages", methods = ["GET"])
 def show_messages(group):
-
     
     GroupTitle = group
     msg = data.query(kind="Message")
     msg.add_filter("GroupTitle","=",GroupTitle)
     msg.order = ["-CreationTime"]
     messages = msg.fetch()
-    output = [{"text":x["Text"], "user":x["User"], "creationtime": x["CreationTime"], "grouptitle": x["GroupTitle"]} for x in messages]
+    output = [{"id" : x.id, "text":x["Text"], "user":x["User"], "creationtime": x["CreationTime"], "grouptitle": x["GroupTitle"]} for x in messages]
 
     return jsonify(output)
 
