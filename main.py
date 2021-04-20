@@ -3,6 +3,7 @@ from google.cloud import datastore
 from datetime import datetime, timedelta
 import hashlib
 import os
+#import json
 
 app = Flask(__name__)
 app.secret_key = b"20072012f35b38f51c782e21b478395891bb6be23a61d70a"
@@ -32,7 +33,7 @@ def login_data():
         return redirect("/")
     else:
         print("Login failed")
-        return render_template("login.html")
+        return render_template("login.html", failed = 1)
 
 
 @app.route("/groups")
@@ -179,8 +180,14 @@ def verify_password(username, password):
 
 @app.route("/register", methods = ["GET"])
 def register():
-    print("Register Page")
-    return render_template("register.html")
+    usernameQuery = data.query(kind = 'UserCredential')
+    #usernameQuery.add_filter('username', '=', 'Cam')    #to limit size for bugfixing
+    result = usernameQuery.fetch()
+    x = [{"uName": i["username"]} for i in result]
+    #x = json.dumps(x)
+    jsonify(x)
+
+    return render_template("register.html", names = x)
 
 @app.route("/profile/")
 def profile():
@@ -190,7 +197,9 @@ def profile():
             return redirect("/login")
     else:
         #url_for('profile', user)
-        return render_template("profile.html", name=user)
+        userpic = ""
+        #userpic = "https://wallpapercave.com/wp/wp6489846.png"
+        return render_template("profile.html", name=user, pic = userpic)
 
 """@app.route("/profile/<user>")
 def profile_user(user):
