@@ -54,7 +54,9 @@ def group(title):
         gd.add_filter("Title","=",title)
     groupData = gd.fetch()
 
+ 
     x = [{"title": i["Title"], "primary": i["PrimColor"], "secondary": i["SecColor"], "image": i["Banner"], "owner":i["Owner"] } for i in groupData]
+
     return jsonify(x)
     
 
