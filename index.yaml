@@ -5,3 +5,8 @@ indexes:
   - name: GroupTitle
   - name: CreationTime
     direction: desc
+    
+- kind: UserGroups
+  properties:
+  - name: Group
+  - name: User

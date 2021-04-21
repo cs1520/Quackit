@@ -15,11 +15,33 @@ def home():
     print("Hit the route!")
     return render_template("index.html")
 
+@app.route("/home/info", methods = ["GET"])
+def home_info():
+
+    ug = data.query(kind="UserGroups")
+    ug.add_filter("User","=",get_user())
+    groups = ug.fetch()   
+
+    followed = []
+
+    for i in groups:
+        fm = data.query(kind="Message")
+        fm.add_filter("GroupTitle","=",i["Group"])
+        fm.order = ["CreationTime"]
+        firstMessage = fm.fetch(limit=1)
+        for x in firstMessage:
+            first = x["Text"]
+
+        groupM = [{"group": i["Group"],"text": first}]
+        followed.append(groupM[0])
+    
+    return jsonify(followed) 
+
 
 @app.route("/login", methods = ["GET"])
 def login():
     
-    return render_template("login.html")
+    return render_template("login.html") 
 
 @app.route("/login", methods = ["POST"])
 def login_data():
@@ -41,9 +63,20 @@ def groupnav():
     return render_template("group-nav.html")
 
 
-@app.route("/groups/<group>")
+@app.route("/groups/<group>", methods = ["GET"])
 def grouppage(group):
-    return render_template("group-page.html", name=group, user=get_user())
+
+    ug = data.query(kind="UserGroups")
+    ug.add_filter("User","=",get_user())
+    groups = ug.fetch()
+
+    follow = False
+
+    for i in groups:
+        if i["Group"] == group:
+            follow = True
+
+    return render_template("group-page.html", name=group, user=get_user(), follow = follow)
 
 
 
@@ -100,7 +133,7 @@ def messagecreate(group):
 def delete_messages(messageid):
     message_key = data.key("Message",messageid)
     print(message_key)
-    data.delete(message_key)
+    data.delete(message_key)    
 
     return 'deleted'
 
@@ -116,6 +149,33 @@ def show_messages(group):
     output = [{"id" : x.id, "text":x["Text"], "user":x["User"], "creationtime": x["CreationTime"], "grouptitle": x["GroupTitle"]} for x in messages]
 
     return jsonify(output)
+
+@app.route("/groups/<group>/follow", methods= ["POST"])
+def follow_group(group):
+    
+    key = data.key("UserGroups")
+    UG = datastore.Entity(key = key)
+    UG["Group"] = group
+    UG["User"] = get_user()
+    data.put(UG)
+
+    return jsonify(UG)
+
+@app.route("/groups/<group>/unfollow", methods= ["POST"])
+def unfollow_group(group):
+    
+    ug = data.query(kind="UserGroups")
+    ug.add_filter("User","=",get_user())
+    ug.add_filter("Group","=",group)
+    group = ug.fetch(limit=1)
+
+    output = [{"id":i.id} for i in group]
+
+    key = data.key("UserGroups", output[0]["id"])
+
+    data.delete(key)
+    
+    return 'deleted'   
 
 
 @app.route("/register", methods = ["POST"])

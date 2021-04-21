@@ -31,6 +31,7 @@ img{
     float: left;
     border-right-style: solid;
     padding-left: 20px;
+    padding-right: 20px;
     padding-top: 10px;
 }
 
@@ -117,6 +118,7 @@ button[type=submit]:hover{
   </div>
 
 <div id="sidebar">
+    <button type = submit id = follow onclick="Follow()">Follow Group</button>
     <div id="about">About</div>
     <div id="rules">Rules</div>
 </div>
@@ -133,9 +135,34 @@ button[type=submit]:hover{
 <script type='text/javascript'>
 var title = '{{ name }}'
 var user = '{{ user }}'
+var follow = '{{ follow }}'
 var owner = null;
 var prim = null;
 var sec = null;
+
+function Follow() {
+    url = "/groups/" + title + "/follow";
+    fetch(url, {method: 'POST'})
+        .then(data => {
+            console.log(data);
+        });
+
+    button = document.getElementById("follow")
+    button.innerText = "Unfollow Group"
+    button.onclick = function() {unFollow()};
+}
+
+function unFollow() {
+    url = "/groups/" + title + "/unfollow";
+    fetch(url, {method: 'POST'})
+        .then(data => {
+            console.log(data);
+        });
+
+    button = document.getElementById("follow")
+    button.innerText = "Follow Group"
+    button.onclick = function() {Follow()};
+}
 
 function createMessage() {
     let data = new URLSearchParams();
@@ -216,12 +243,6 @@ function loadMessages() {
         });
 }
 
-function sendMessage() {
-
-    data()
-
-}
-
 function renderPage(d) {
 
     document.getElementById("grouptitle").innerText = d.title;
@@ -232,8 +253,6 @@ function renderPage(d) {
     owner = d.owner;
     prim = d.primary;
     sec = d.secondary;
-
-    loadMessages();
 
     var a = document.getElementsByTagName('a')
 
@@ -251,12 +270,26 @@ function data(){
             console.log(data[0]);
             renderPage(data[0]);
         });
+
+    loadMessages();
+
+    console.log(follow == "True")
+
+    if(follow == "True"){
+        button = document.getElementById("follow")
+        button.innerText = "Unfollow Group"
+        button.onclick = function() {unFollow()};
+    }
+
 }
+
 
 
 window.onload = function() {
 
     this.data();
+
+    
 
 }
 </script>
