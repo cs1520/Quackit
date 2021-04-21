@@ -187,6 +187,8 @@ img{
     <div id='search'><a>Search</a></div>
   </div>
     <center>
+    <p id = errormsg style = "color:red"> </p>
+        
     <form method = "POST" action = "/login">
         <div>
          <p>
@@ -210,7 +212,8 @@ img{
     var failed = '{{ failed }}'
 
     if(failed == 1){
-        window.alert("Login Failed");
+        //window.alert("Login Failed");
+        document.getElementById("errormsg").innerText = "Login Failed! Please try again.";
     }
     </script>
 </body>
