@@ -45,21 +45,34 @@ img{
 
 #msgdisplay{
     overflow: scroll;
-    height: 400px;
+    height: 500px;
     width: auto;
     margin:auto;
     border-style: solid;
     padding: 15px;
 }
 
-#about{
+textarea{
     width: 100%;
-    height: 50%;
+    height: 100%;
+    font-family:"Tahoma";
+    resize: none;
+    margin-top: 2px;
 }
 
-#rules{
+textarea:disabled{
+    border-style:hidden;
+    border-top-style:solid;
+    border-width:3px;
+    padding: 0px;
+    padding-top: 3px;
+}
+
+#sidebar_area{
     width: 100%;
-    height:50%;
+    height: 300px;
+    font-family:"Tahoma";
+    margin-bottom: 30px;
 }
 
 #input{
@@ -94,6 +107,28 @@ button[type=submit]:hover{
     border-color:black;
 }
 
+#edit{
+    width:auto;
+    height:18px;
+    float:right;
+    border-style:hidden;
+}
+
+#edit:hover{
+    border-style:dashed;
+    border-color:black;
+}
+
+#aboutT{
+    width:20%;
+    float: left;
+}
+
+#rulesT{
+    width:20%;
+    float: left;
+}
+
 </style>
 
 
@@ -119,8 +154,10 @@ button[type=submit]:hover{
 
 <div id="sidebar">
     <button type = submit id = follow onclick="Follow()">Follow Group</button>
-    <div id="about">About</div>
-    <div id="rules">Rules</div>
+    <div id = "aboutT">About</div>
+    <div id="sidebar_area"><textarea disabled id = "about"></textarea></div>
+    <div id = "rulesT">Rules</div>
+    <div id="sidebar_area"><textarea disabled id = "rules"></textarea></div>
 </div>
 
 <div id="messageboard">
@@ -164,6 +201,47 @@ function unFollow() {
     button.onclick = function() {Follow()};
 }
 
+function updateAbout(button){
+    
+    if(button.value == 0){
+        document.getElementById("about").disabled = false;
+        button.innerText='Save';
+        button.value = 1;
+    }
+    else{
+        document.getElementById("about").disabled = true;
+        let data = new URLSearchParams();
+        data.append("type", "about");
+        data.append("data", document.getElementById("about").value);
+        var url = "/groups/"+title+"/updatedetails";
+        fetch(url, {method: 'POST', body: data})
+        .then((data) => {
+            console.log(data);
+        });
+    }
+
+}
+
+function updateRules(button){
+
+    if(button.value == 0){
+        document.getElementById("rules").disabled = false;
+        button.innerText='Save';
+        button.value = 1;
+    }
+    else{
+        document.getElementById("rules").disabled = true;
+        let data = new URLSearchParams();
+        data.append("type", "rules");
+        data.append("data", document.getElementById("rules").value);
+        var url = "/groups/"+title+"/updatedetails";
+        fetch(url, {method: 'POST', body: data})
+        .then((data) => {
+            console.log(data);
+        });
+    }
+}
+
 function createMessage() {
     let data = new URLSearchParams();
     data.append("message", document.getElementsByName("message")[0].value);
@@ -204,7 +282,7 @@ function renderMessages(d) {
             del.type = 'button';
             del.onclick = function() {deleteMessage(this.value)};
             del.id = "delete";
-            del.innerText = "Delete"
+            del.innerText = "Delete";
             del.style.color = prim;
             del.style.backgroundColor = sec;
             del.value = d[i].id;
@@ -250,15 +328,49 @@ function renderPage(d) {
     document.getElementById("body").style.color = d.primary;
     document.getElementById("body").style.backgroundColor = d.secondary;
     document.getElementById("image").src = d.image;
+    document.getElementById("about").value = d.about;
+    document.getElementById("rules").value = d.rules;
     owner = d.owner;
     prim = d.primary;
     sec = d.secondary;
 
-    var a = document.getElementsByTagName('a')
+    var a = document.getElementsByTagName('a');
 
     for(i =0; i < a.length; i++){
-        a[i].style.color = d.primary;
+        a[i].style.color = d.primary;        
     }
+
+    if(owner == user){
+        editA = document.createElement("BUTTON");
+        editB = document.createElement("BUTTON");
+        editA.type = 'button';
+        editB.type = "button";
+        editA.onclick = function() {updateAbout(this)};
+        editB.onclick = function() {updateRules(this)};
+        editA.id = "edit";
+        editB.id = "edit";
+        editA.innerText = "Edit";
+        editB.innerText = "Edit";
+        editA.style.color = prim;
+        editB.style.color = prim;
+        editA.style.backgroundColor = sec;
+        editB.style.backgroundColor = sec;
+        editA.value = 0;
+        editB.value = 0;
+        document.getElementById("aboutT").after(editA);
+        document.getElementById("rulesT").after(editB)
+
+
+    }
+
+    var textarea = document.getElementsByTagName("textarea");
+
+        for(i =0; i < textarea.length; i++){
+        textarea[i].style.color = d.primary;
+        textarea[i].style.backgroundColor = d.secondary
+        textarea[i].style.borderColor = d.primary;
+    }
+
 }
 
 function data(){

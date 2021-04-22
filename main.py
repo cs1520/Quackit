@@ -27,7 +27,7 @@ def home_info():
     for i in groups:
         fm = data.query(kind="Message")
         fm.add_filter("GroupTitle","=",i["Group"])
-        fm.order = ["CreationTime"]
+        fm.order = ["-CreationTime"]
         firstMessage = fm.fetch(limit=1)
         for x in firstMessage:
             first = x["Text"]
@@ -89,10 +89,20 @@ def group(title):
     groupData = gd.fetch()
 
  
-    x = [{"title": i["Title"], "primary": i["PrimColor"], "secondary": i["SecColor"], "image": i["Banner"], "owner":i["Owner"] } for i in groupData]
+    x = [{"title": i["Title"], "primary": i["PrimColor"], "secondary": i["SecColor"], "image": i["Banner"], "owner":i["Owner"], "about": i["About"], "rules": i["Rules"]} for i in groupData]
 
     return jsonify(x)
-    
+
+@app.route("/groupdata/nav", methods = ["GET"])
+def groupdatanav():
+
+    gd = data.query(kind="Group")
+    groupData = gd.fetch()
+
+ 
+    x = [{"title": i["Title"], "primary": i["PrimColor"], "secondary": i["SecColor"]} for i in groupData]
+
+    return jsonify(x)
 
 @app.route("/groupcreate", methods = ["POST"])
 def groupcreate():
@@ -108,9 +118,29 @@ def groupcreate():
     group["PrimColor"] = groupP
     group["SecColor"] = groupS
     group["Owner"] = get_user()
+    group["About"] = ""
+    group["Rules"] = ""
     data.put(group)
 
     return jsonify(group)
+
+
+@app.route("/groups/<group>/updatedetails", methods = ["POST"])
+def groupupdate(group):
+    ty = request.form.get("type")
+    dat = request.form.get("data")
+
+    group_key = data.key("Group",group)
+    g = data.get(key=group_key)
+    if ty == 'about':
+        g["About"] = dat
+    else:
+        g["Rules"] = dat
+    
+    data.put(g)
+
+    return jsonify(g)
+
 
 @app.route("/groups/<group>/messagecreate", methods = ["POST"])
 def messagecreate(group):
@@ -132,7 +162,6 @@ def messagecreate(group):
 @app.route("/messagedelete/<int:messageid>", methods = ["POST"])
 def delete_messages(messageid):
     message_key = data.key("Message",messageid)
-    print(message_key)
     data.delete(message_key)    
 
     return 'deleted'

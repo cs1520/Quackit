@@ -96,11 +96,11 @@ input[type=color]{
         <input type="text" id="input" name="title" placeholder="Enter Group Title">
         <input type="text" id="input" name="banner" placeholder="Enter Banner Image URL">
         <div id="colorpick">
-            <div style="width:20%; float:left;">Pick Primary Color :</div>
+            <div style="width:20%; float:left;">Pick Text Color :</div>
             <input type="color" name="primary" value="#008000">
         </div>
         <div id="colorpick">
-            <div style="width:20%; float:left;">Pick Secondary Color :</div> 
+            <div style="width:20%; float:left;">Pick Background Color :</div> 
             <input type="color" name="secondary" value="#fcfc8d">
         </div>
         <button type = submit onclick="createGroup()">Create New Group</button>
@@ -155,7 +155,7 @@ function renderList(d) {
 }
 
 function data(){
-    fetch("/groupdata/NULL")
+    fetch("/groupdata/nav")
         .then(response => response.json())
         .then(data => {
             console.log(data);
