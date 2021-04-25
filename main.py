@@ -218,8 +218,8 @@ def register_data():
     user["username"] = username
     salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("utf-8")
     user["salt"] = salt
-    #user["hashPassword"] = hash_password(password, salt)
-    user["hashPassword"] = password
+    user["hashPassword"] = hash_password(password, salt)
+    # user["hashPassword"] = password
     data.put(user)    
 
     return render_template("index.html")
@@ -252,8 +252,8 @@ def verify_password(username, password):
 
         if(userData[0]["U"] == username):
             print("Username Match!")
-            #login_attempt = hash_password(password, userData[0]["S"])
-            login_attempt = password
+            login_attempt = hash_password(password, userData[0]["S"])
+            #login_attempt = password
             #if(login_attempt == userData[0]["P"] + userData[0]["S"]):
             if(login_attempt == userData[0]["P"]):
                 print("Password Match!")
