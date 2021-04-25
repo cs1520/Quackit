@@ -187,7 +187,8 @@ img{
     <div id='search'><a>Search</a></div>
   </div>
     <center>
-    <form method = "POST" id = form onsubmit="usernameAuth()" >
+        <p id = errormsg style = "color:red"> </p>
+    <form method = "POST" id = form>
         <div>
          <p>
             <label>Username</label>
@@ -204,14 +205,15 @@ img{
     </center>
 
 <script>
-    var names = '{{ names | tojson }}';
-    names = JSON.parse(names);
-    //window.alert(names[2]);
+    var taken = '{{ taken }}';
 
+    if(taken == 1){
+         document.getElementById("errormsg").innerText = "That username is already taken! Please choose a new username.";
+    }
     //for(i = 0; i < names.length; i++){
       //  console.log(names[i].uName + "\n")
     //}
-    function usernameAuth(){
+    /*function usernameAuth(){
         var newUser = document.getElementById("username");
         console.log("This Method is running");
         console.log(newUser);
@@ -223,7 +225,7 @@ img{
             }
         }
 
-    }
+    }*/
 </script>    
 </body>
 

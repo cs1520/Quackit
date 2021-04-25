@@ -12,8 +12,12 @@ data = datastore.Client()
 @app.route("/")
 def home():
     """Return a simple HTML page."""
-    print("Hit the route!")
-    return render_template("index.html")
+    #print("Hit the route!")
+
+    if(get_user() == None):
+        return render_template("login.html")
+    else:
+        return render_template("index.html")
 
 @app.route("/home/info", methods = ["GET"])
 def home_info():
@@ -213,16 +217,32 @@ def register_data():
     username = request.form.get("username")
     password = request.form.get("password")
 
-    user_key = data.key("UserCredential", username)
-    user = datastore.Entity(key=user_key)
-    user["username"] = username
-    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("utf-8")
-    user["salt"] = salt
-    user["hashPassword"] = hash_password(password, salt)
-    # user["hashPassword"] = password
-    data.put(user)    
+    if(username_Auth(username)):
+        user_key = data.key("UserCredential", username)
+        user = datastore.Entity(key=user_key)
+        user["username"] = username
+        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("utf-8")
+        user["salt"] = salt
+        user["hashPassword"] = hash_password(password, salt)
+        # user["hashPassword"] = password
+        data.put(user)    
+        return render_template("index.html")
+    else:
+        return render_template("register.html", taken=1)
 
-    return render_template("index.html")
+def username_Auth(nUsername):
+    users = data.query(kind = 'UserCredential')
+    result = users.fetch()
+
+    usersNames = [{"U": i["username"]} for i in result]
+
+    for i in usersNames:
+        if(i["U"] == nUsername):
+            return False
+
+    return True
+
+
 
 def hash_password(password, salt):
     """This will give us a hashed password that will be extremlely difficult to 
@@ -243,9 +263,9 @@ def verify_password(username, password):
 
         userData = [{"U": i["username"], "P": i["hashPassword"], "S": i["salt"]} for i in result]
 
-        print(userData[0]["U"])
-        print(userData[0]["P"])
-        print(userData[0]["S"])
+        #print(userData[0]["U"])
+        #print(userData[0]["P"])
+        #print(userData[0]["S"])
 
         userSalt = str(userData[0]["S"])
         print(userSalt)
@@ -260,7 +280,7 @@ def verify_password(username, password):
                 session["user"] = username
                 return True #I don't know what to return
             else:
-                print("Password Mismatch!")
+                #print("Password Mismatch!")
                 return None
 
         else:
@@ -289,6 +309,25 @@ def profile():
         userpic = ""
         #userpic = "https://wallpapercave.com/wp/wp6489846.png"
         return render_template("profile.html", name=user, pic = userpic)
+@app.route("/changeData", methods = ["GET"])
+def changeData():
+    return render_template("changeData.html")
+
+@app.route("/changeData", methods = ["POST"])
+def updateData():
+    currUser = get_user()
+    nPassword = request.form.get("newPassword")
+
+    user_key = data.key("UserCredential", currUser)
+    user = datastore.Entity(key=user_key)
+    user["username"] = currUser
+    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("utf-8")
+    user["salt"] = salt
+    user["hashPassword"] = hash_password(nPassword, salt)
+    data.put(user)
+    return render_template("changeData.html", success = 1)
+
+
 
 """@app.route("/profile/<user>")
 def profile_user(user):
