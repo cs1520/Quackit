@@ -252,7 +252,8 @@ def register_data():
         user["salt"] = salt
         user["hashPassword"] = hash_password(password, salt)
         # user["hashPassword"] = password
-        data.put(user)    
+        data.put(user)
+        session["user"] = username
         return render_template("index.html")
     else:
         return render_template("register.html", taken=1)
@@ -294,8 +295,8 @@ def verify_password(username, password):
         #print(userData[0]["P"])
         #print(userData[0]["S"])
 
-        userSalt = str(userData[0]["S"])
-        print(userSalt)
+        #userSalt = str(userData[0]["S"])
+        #print(userSalt)
 
         if(userData[0]["U"] == username):
             print("Username Match!")
