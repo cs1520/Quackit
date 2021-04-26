@@ -1,9 +1,89 @@
+<!DOCTYPE html>
 <html>
 <style>
-    img {
-  border-radius: 50%;
+@charset "UTF-8";
+
+body.loading .loading-modal {
+    display: block
 }
-    button[type = submit] {
+
+.title {
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+}
+
+.title h1 {
+    color: #000;
+}
+
+.dropzone {
+    border: 4px dashed #ccc;
+    height: 200px;
+    position: relative;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 50%;
+}
+
+.info {
+    margin-top: 11%;
+}
+
+.dropzone p {
+    margin: 0%;
+    text-align: center;
+    width: 100%
+}
+
+.input {
+    height: 100%;
+    left: 0;
+    outline: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    width: 100%
+}
+
+.status {
+    border-radius: 5px;
+    text-align: center;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.image-url {
+    width: 50%;
+}
+
+.dropzone.dropzone-dragging {
+    border-color: #000
+}
+
+.loading-modal {
+    background-color: rgba(255, 255, 255, .8);
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%
+}
+
+.loading-table {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15%;
+    margin-bottom: 15%;
+}
+
+.img {
+    width: 100%;
+}
+  button[type = submit] {
   background-color: grey;
   color: white;
   padding: 12px 20px;
@@ -171,76 +251,44 @@ a{
   margin-bottom: 15px;
   float:left;
 }
-#friendslist{
-  width: 30%;
-  height: auto;
-  float: right;
-  padding-right: 20px;
-  padding-top: 20px;
-}
-</style>
+</style>    
+
 <head>
-    <title>Profile</title>
+    <meta charset="UTF-8">
+    <title>Image-Upload</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<link rel="shortcut icon" href="./image.png">-->
 </head>
-<body id= "body" style='font-family:"Tahoma";'>
 
-  <div id='header'>
+<body style='font-family:"Tahoma";'>
+    <div id='header'>
 
-    <div id = profile><a href = '/logout'>Logout</a></div>
+    <div id = profile><a href = '/profile'>Profile</a></div>
     <div id='quackit'><a href='/'>Quackit</a></div>
     <div id='friends'><a>Friends</a></div>
     <div id='groups'><a href='/groups'>Groups</a></div>
     <div id='search'><a>Search</a></div>
   </div>
-
-    <div id = friendslist>
-        <h2>Your Friends:</h2>
-        *Placeholder for friends panel*
+    <div class="title">
+        <h3>Change Your Profile Picture</h3>
     </div>
-        
-    <!--<div id = login><a href = '/login'>Login</a></div>-->
-     <img id = profilepicture height = 200px width = 200px src =""></img>
+    <center>
+    <form method = "POST" action = "/imageUpload">
+    <div class="dropzone">
+        <div class="info"></div>
+    </div>
 
-    <div id = hellomessage>
-        Text</div>
-    <a href = '/changeData'>Change Password</a>
-    <p></p>
-    <a href = '/imageUpload'>Upload New Profile Picture</a>
-       
-
-
-
-<script type='text/javascript'>
-    var username = '{{ name }}'
-    var profilepic = '{{ pic }}'
-    document.getElementById("hellomessage").innerText = "Hello, " + username;
-    if(profilepic != null && profilepic != ''){
-        document.getElementById("profilepicture").src = profilepic;
-    }
- /*   function renderPage(d) {
-        
-        window.alert("test");
-    }
-
-function data(){
-    //window.alert("test");
-    var url = "/profile/";
-    console.log(url);
-    fetch(url)
-        .then(response => response.text())
-        .then(data => {
-            console.log(data[0]);
-           
-            renderPage(data[0]);
-        });
-}
-
-    window.onload = function() {
-
-    this.data();
-    
-}*/
-</script>
+<div>
+    <p>
+        <label>Please Copy Paste the above link here (Yes its janky I'm sorry):</label>
+        <input type="text" name = "newPicture" required>
+    </p>
+    <button type = submit>Use this Image</button>
+</div>
+</form>
+</center>
+    <script type="text/javascript" src="./static/imgur.js"></script>
+    <script type="text/javascript" src="./static/upload.js"></script>
 </body>
 
 </html>

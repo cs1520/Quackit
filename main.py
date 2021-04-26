@@ -252,7 +252,14 @@ def register_data():
         user["salt"] = salt
         user["hashPassword"] = hash_password(password, salt)
         # user["hashPassword"] = password
+
+        userData_key = data.key("UserDetails", username)
+        userData = datastore.Entity(key=userData_key)
+        userData["username"] = username
+        userData["profile picture"] = "https://i.imgur.com/wqO3i23.jpg" # hardcoded default profile picture
+
         data.put(user)
+        data.put(userData)
         session["user"] = username
         return render_template("index.html")
     else:
@@ -333,8 +340,11 @@ def profile():
     if user == None:
             return redirect("/login")
     else:
-        #url_for('profile', user)
-        userpic = ""
+        profilepicQuery = data.query(kind = 'UserDetails')
+        profilepicQuery.add_filter('username', '=', user)    #to limit size for bugfixing
+        result = profilepicQuery.fetch()
+        x = [{"profilepic": i["profile picture"]} for i in result]
+        userpic = x[0]["profilepic"]
         #userpic = "https://wallpapercave.com/wp/wp6489846.png"
         return render_template("profile.html", name=user, pic = userpic)
 @app.route("/changeData", methods = ["GET"])
@@ -355,7 +365,24 @@ def updateData():
     data.put(user)
     return render_template("changeData.html", success = 1)
 
+@app.route("/imageUpload", methods = ["GET"])
+def imageUpload():
+    return render_template("image-upload.html")
 
+@app.route("/imageUpload", methods = ["POST"])
+def imageUploadData():
+    newPic = request.form.get("newPicture")
+    username = get_user()
+
+    if(username == None):
+        render_template("login.html")
+
+    userData_key = data.key("UserDetails", username)
+    userData = datastore.Entity(key=userData_key)
+    userData["username"] = username
+    userData["profile picture"] = newPic
+    data.put(userData)
+    return redirect("/profile")
 
 """@app.route("/profile/<user>")
 def profile_user(user):

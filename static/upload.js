@@ -19,7 +19,7 @@ var feedback = function(res) {
         var get_link = res.data.link.replace(/^http:\/\//i, 'https://');
         document.querySelector('.status').classList.add('bg-success');
         var content =
-            'Copy URL to share image: ' + '<br><input class="image-url" value=\"'
+            'Copy URL to share image: ' + '<br><input class="image-url" id = imgurUrl value=\"'
              + get_link + '\"/>'  + '<img class="img" alt="Imgur-Upload" src=\"'
              + get_link + '\"/>';
         addImg('.status', content);
