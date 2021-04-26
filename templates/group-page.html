@@ -252,26 +252,21 @@ function createMessage() {
             console.log(data);
         });
 
-    location.reload();        
-    //loadNewMessage();    
-   //let msgdisplay = document.getElementById("msgdisplay");
-    //var msgbox = document.createElement("DIV");
-    //var msg = document.createElement("p");
-    //msg.innerText = document.getElementsByName("message")[0].value;
-    //msgdisplay.appendChild(msg);
+    renderNewMessage();
 }
 
-function renderNewMessage(d){
+function renderNewMessage(){
     let msgdisplay = document.getElementById("msgdisplay");
     var msgbox = document.createElement("DIV");
     msgbox.id = "msgbox";
     var msg = document.createElement("p");
-    msg.innerText = d[0].user+": "+d[0].text;
-    msgdisplay.appendChild(msg);
+    msgbox.innerText = user+": "+document.getElementsByName("message")[0].value;
+    msgdisplay.prepend(msgbox);
 }
 
 function renderMessages(d) {
     let msgdisplay = document.getElementById("msgdisplay");
+    msgdisplay.innerHTML = "";
     for(var i=0;i<d.length;i++){
         var msgbox = document.createElement("DIV");
         msgbox.id = "msgbox";
@@ -299,16 +294,6 @@ function deleteMessage(val){
     .then((data) => {
         console.log(data);
     });
-}
-
-function loadNewMessage(){
-    var url = "/groupdata/"+title+"/messages";
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            console.log(data)
-            renderNewMessage(data)
-        })
 }
 
 function loadMessages() {
@@ -401,7 +386,7 @@ window.onload = function() {
 
     this.data();
 
-    
+    setInterval(loadMessages, 30000); 
 
 }
 </script>
