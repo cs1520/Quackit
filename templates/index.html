@@ -1,6 +1,7 @@
 <html>
 <head>
-     <link href="/static/style.css" rel="stylesheet"></link>
+    <title>Quackit</title>
+    <link href="/static/style.css" rel="stylesheet"></link>
 </head>
 
 <body style='color:green; background-color:white; font-family:"Tahoma";'>
@@ -18,14 +19,14 @@
     <div id='active'>
       <div>Active Groups</div>
       <div id='box'>
-        <div id='item'>
+       <!-- <div id='item'>
           <div id='groupname'>Movies</div>
           <div id='toppost'>"Whats your favorite movie?"</div>
         </div>
         <div id='item'>
           <div id='groupname'>Art</div>
           <div id='toppost'>"Van Gogh slaps"</div>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -62,25 +63,47 @@
       </div>
     </div>
 
-<!--<script src="/static/main.js"></script>
-<script type ='text/javascript'>
+<script>
+
+
+function renderFollowedGroups(d){
+
+    var box = document.getElementById("box")
+    console.log(box)
+
+    for(var i = 0; i< d.length; i ++){
+        var item = document.createElement("DIV");
+        item.id = "item";
+        var groupname = document.createElement("DIV");
+        groupname.id = "groupname";
+        groupname.innerText = d[i].group;
+        var toppost = document.createElement("DIV");
+        toppost.id = "toppost";
+        toppost.innerText = d[i].text;
+        var link = document.createElement("A")
+        link.href = "/groups/" + d[i].group;
+        item.appendChild(groupname);
+        item.appendChild(toppost);
+        link.appendChild(item);
+        box.appendChild(link);
+    }
+
+}
+
 
 function data(){
-       fetch(`/profile/<user>`)
-       .then(response => response.json())
-       .then(data => {
-       container.innerHTML = "";
-       for(i=0; i<data.length; i++){
-       renderMessage(container, data[i])
-     }
-     console.log(data)
+    fetch(`/home/info`)
+    .then(response => response.json())
+    .then(data => {
+        renderFollowedGroups(data)
+        console.log(data)
    });
    }
 
 window.onload = function() {
 
     this.data()
-}-->
+}
 
 
 </script>

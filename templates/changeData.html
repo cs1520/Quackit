@@ -1,5 +1,6 @@
-button[type = submit] {
-  width: 100%;
+<html>
+    <style>
+    button[type = submit] {
   background-color: grey;
   color: white;
   padding: 12px 20px;
@@ -118,7 +119,6 @@ img{
   width: auto;
   padding:15px;
   padding-bottom:0px;
-  overflow: scroll;
 }
 
 #minibox{
@@ -172,4 +172,42 @@ img{
   text-align: center;
   margin-bottom: 15px;
   float:left;
-}
+}</style>
+<head>
+    <title>Update Your Account Data</title>
+</head>
+<body id= "body" style='font-family:"Tahoma";'>
+
+  <div id='header'>
+
+    <div id = profile><a href = '/profile'>Profile</a></div>
+    <div id='quackit'><a href='/'>Quackit</a></div>
+    <div id='friends'><a>Friends</a></div>
+    <div id='groups'><a href='/groups'>Groups</a></div>
+    <div id='search'><a>Search</a></div>
+  </div>
+    <center>
+        <p id = successmsg style = "color:limegreen"> </p>
+    <form method = "POST" id = form>
+        <div>
+         <p>
+            <label>New Password</label>
+            <input type="text" name="newPassword" required id = "newPassword">
+        </p>
+
+          <button type="submit">Update User Data</button>
+        </div>
+    </form>
+    </center>
+
+<script>
+    var success = '{{ success }}';
+
+    if(success == 1){
+        console.log("BugFixin")
+        document.getElementById("successmsg").innerText = "Password Successfully Changed!";
+    }
+</script>    
+</body>
+
+</html>

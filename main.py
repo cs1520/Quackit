@@ -1,8 +1,9 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from google.cloud import datastore
-from datetime import datetime
+from datetime import datetime, timedelta
 import hashlib
 import os
+#import json
 
 app = Flask(__name__)
 app.secret_key = b"20072012f35b38f51c782e21b478395891bb6be23a61d70a"
@@ -11,14 +12,40 @@ data = datastore.Client()
 @app.route("/")
 def home():
     """Return a simple HTML page."""
-    print("Hit the route!")
-    return render_template("index.html")
+    #print("Hit the route!")
+
+    if(get_user() == None):
+        return render_template("login.html")
+    else:
+        return render_template("index.html")
+
+@app.route("/home/info", methods = ["GET"])
+def home_info():
+
+    ug = data.query(kind="UserGroups")
+    ug.add_filter("User","=",get_user())
+    groups = ug.fetch()   
+
+    followed = []
+
+    for i in groups:
+        fm = data.query(kind="Message")
+        fm.add_filter("GroupTitle","=",i["Group"])
+        fm.order = ["-CreationTime"]
+        firstMessage = fm.fetch(limit=1)
+        for x in firstMessage:
+            first = x["Text"]
+
+        groupM = [{"group": i["Group"],"text": first}]
+        followed.append(groupM[0])
+    
+    return jsonify(followed) 
 
 
 @app.route("/login", methods = ["GET"])
 def login():
     
-    return render_template("login.html")
+    return render_template("login.html") 
 
 @app.route("/login", methods = ["POST"])
 def login_data():
@@ -32,7 +59,7 @@ def login_data():
         return redirect("/")
     else:
         print("Login failed")
-        return render_template("login.html")
+        return render_template("login.html", failed = 1)
 
 
 @app.route("/groups")
@@ -40,9 +67,20 @@ def groupnav():
     return render_template("group-nav.html")
 
 
-@app.route("/groups/<group>")
+@app.route("/groups/<group>", methods = ["GET"])
 def grouppage(group):
-    return render_template("group-page.html", name=group)
+
+    ug = data.query(kind="UserGroups")
+    ug.add_filter("User","=",get_user())
+    groups = ug.fetch()
+
+    follow = False
+
+    for i in groups:
+        if i["Group"] == group:
+            follow = True
+
+    return render_template("group-page.html", name=group, user=get_user(), follow = follow)
 
 
 
@@ -54,9 +92,21 @@ def group(title):
         gd.add_filter("Title","=",title)
     groupData = gd.fetch()
 
-    x = [{"title": i["Title"], "primary": i["PrimColor"], "secondary": i["SecColor"], "image": i["Banner"]} for i in groupData]
+ 
+    x = [{"title": i["Title"], "primary": i["PrimColor"], "secondary": i["SecColor"], "image": i["Banner"], "owner":i["Owner"], "about": i["About"], "rules": i["Rules"]} for i in groupData]
+
     return jsonify(x)
-    
+
+@app.route("/groupdata/nav", methods = ["GET"])
+def groupdatanav():
+
+    gd = data.query(kind="Group")
+    groupData = gd.fetch()
+
+ 
+    x = [{"title": i["Title"], "primary": i["PrimColor"], "secondary": i["SecColor"]} for i in groupData]
+
+    return jsonify(x)
 
 @app.route("/groupcreate", methods = ["POST"])
 def groupcreate():
@@ -71,9 +121,30 @@ def groupcreate():
     group["Banner"] = groupB
     group["PrimColor"] = groupP
     group["SecColor"] = groupS
+    group["Owner"] = get_user()
+    group["About"] = ""
+    group["Rules"] = ""
     data.put(group)
 
     return jsonify(group)
+
+
+@app.route("/groups/<group>/updatedetails", methods = ["POST"])
+def groupupdate(group):
+    ty = request.form.get("type")
+    dat = request.form.get("data")
+
+    group_key = data.key("Group",group)
+    g = data.get(key=group_key)
+    if ty == 'about':
+        g["About"] = dat
+    else:
+        g["Rules"] = dat
+    
+    data.put(g)
+
+    return jsonify(g)
+
 
 @app.route("/groups/<group>/messagecreate", methods = ["POST"])
 def messagecreate(group):
@@ -92,18 +163,52 @@ def messagecreate(group):
 
     return jsonify(message)
 
+@app.route("/messagedelete/<int:messageid>", methods = ["POST"])
+def delete_messages(messageid):
+    message_key = data.key("Message",messageid)
+    data.delete(message_key)    
+
+    return 'deleted'
+
+
 @app.route("/groupdata/<group>/messages", methods = ["GET"])
 def show_messages(group):
-
     
     GroupTitle = group
     msg = data.query(kind="Message")
     msg.add_filter("GroupTitle","=",GroupTitle)
     msg.order = ["-CreationTime"]
     messages = msg.fetch()
-    output = [{"text":x["Text"], "user":x["User"], "creationtime": x["CreationTime"], "grouptitle": x["GroupTitle"]} for x in messages]
+    output = [{"id" : x.id, "text":x["Text"], "user":x["User"], "creationtime": x["CreationTime"], "grouptitle": x["GroupTitle"]} for x in messages]
 
     return jsonify(output)
+
+@app.route("/groups/<group>/follow", methods= ["POST"])
+def follow_group(group):
+    
+    key = data.key("UserGroups")
+    UG = datastore.Entity(key = key)
+    UG["Group"] = group
+    UG["User"] = get_user()
+    data.put(UG)
+
+    return jsonify(UG)
+
+@app.route("/groups/<group>/unfollow", methods= ["POST"])
+def unfollow_group(group):
+    
+    ug = data.query(kind="UserGroups")
+    ug.add_filter("User","=",get_user())
+    ug.add_filter("Group","=",group)
+    group = ug.fetch(limit=1)
+
+    output = [{"id":i.id} for i in group]
+
+    key = data.key("UserGroups", output[0]["id"])
+
+    data.delete(key)
+    
+    return 'deleted'   
 
 
 @app.route("/register", methods = ["POST"])
@@ -112,16 +217,32 @@ def register_data():
     username = request.form.get("username")
     password = request.form.get("password")
 
-    user_key = data.key("UserCredential", username)
-    user = datastore.Entity(key=user_key)
-    user["username"] = username
-    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("utf-8")
-    user["salt"] = salt
-    #user["hashPassword"] = hash_password(password, salt)
-    user["hashPassword"] = password
-    data.put(user)    
+    if(username_Auth(username)):
+        user_key = data.key("UserCredential", username)
+        user = datastore.Entity(key=user_key)
+        user["username"] = username
+        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("utf-8")
+        user["salt"] = salt
+        user["hashPassword"] = hash_password(password, salt)
+        # user["hashPassword"] = password
+        data.put(user)    
+        return render_template("index.html")
+    else:
+        return render_template("register.html", taken=1)
 
-    return render_template("index.html")
+def username_Auth(nUsername):
+    users = data.query(kind = 'UserCredential')
+    result = users.fetch()
+
+    usersNames = [{"U": i["username"]} for i in result]
+
+    for i in usersNames:
+        if(i["U"] == nUsername):
+            return False
+
+    return True
+
+
 
 def hash_password(password, salt):
     """This will give us a hashed password that will be extremlely difficult to 
@@ -142,24 +263,24 @@ def verify_password(username, password):
 
         userData = [{"U": i["username"], "P": i["hashPassword"], "S": i["salt"]} for i in result]
 
-        print(userData[0]["U"])
-        print(userData[0]["P"])
-        print(userData[0]["S"])
+        #print(userData[0]["U"])
+        #print(userData[0]["P"])
+        #print(userData[0]["S"])
 
         userSalt = str(userData[0]["S"])
         print(userSalt)
 
         if(userData[0]["U"] == username):
             print("Username Match!")
-            #login_attempt = hash_password(password, userData[0]["S"])
-            login_attempt = password
+            login_attempt = hash_password(password, userData[0]["S"])
+            #login_attempt = password
             #if(login_attempt == userData[0]["P"] + userData[0]["S"]):
             if(login_attempt == userData[0]["P"]):
                 print("Password Match!")
                 session["user"] = username
                 return True #I don't know what to return
             else:
-                print("Password Mismatch!")
+                #print("Password Mismatch!")
                 return None
 
         else:
@@ -168,8 +289,14 @@ def verify_password(username, password):
 
 @app.route("/register", methods = ["GET"])
 def register():
-    print("Register Page")
-    return render_template("register.html")
+    usernameQuery = data.query(kind = 'UserCredential')
+    #usernameQuery.add_filter('username', '=', 'Cam')    #to limit size for bugfixing
+    result = usernameQuery.fetch()
+    x = [{"uName": i["username"]} for i in result]
+    #x = json.dumps(x)
+    jsonify(x)
+
+    return render_template("register.html", names = x)
 
 @app.route("/profile/")
 def profile():
@@ -179,7 +306,28 @@ def profile():
             return redirect("/login")
     else:
         #url_for('profile', user)
-        return render_template("profile.html", name=user)
+        userpic = ""
+        #userpic = "https://wallpapercave.com/wp/wp6489846.png"
+        return render_template("profile.html", name=user, pic = userpic)
+@app.route("/changeData", methods = ["GET"])
+def changeData():
+    return render_template("changeData.html")
+
+@app.route("/changeData", methods = ["POST"])
+def updateData():
+    currUser = get_user()
+    nPassword = request.form.get("newPassword")
+
+    user_key = data.key("UserCredential", currUser)
+    user = datastore.Entity(key=user_key)
+    user["username"] = currUser
+    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("utf-8")
+    user["salt"] = salt
+    user["hashPassword"] = hash_password(nPassword, salt)
+    data.put(user)
+    return render_template("changeData.html", success = 1)
+
+
 
 """@app.route("/profile/<user>")
 def profile_user(user):
