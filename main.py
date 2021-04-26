@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from google.cloud import datastore
 from datetime import datetime, timedelta
+import itertools
 import hashlib
 import os
 #import json
@@ -40,6 +41,32 @@ def home_info():
         followed.append(groupM[0])
     
     return jsonify(followed) 
+
+@app.route("/home/recommended", methods = ["GET"])
+def home_recommended():
+    usergd = data.query(kind="UserGroups")
+    usergd.add_filter("User","=",get_user())
+    userGroupData = usergd.fetch()
+
+    allgd = data.query(kind="Group")
+    allGroupData = allgd.fetch()
+
+    followed = []
+    not_followed = []
+
+    for i in userGroupData:
+        followed.append(i["Group"])
+
+    for i in allGroupData:
+        f = 0
+        for j in range(len(followed)):
+            if(i["Title"]==followed[j]):
+                f=1
+        if(f==0):
+            groupNF = [{"group": i["Title"]}]
+            not_followed.append(groupNF[0])
+
+    return jsonify(not_followed)
 
 
 @app.route("/login", methods = ["GET"])

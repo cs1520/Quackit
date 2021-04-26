@@ -47,8 +47,8 @@
     <div id='Recommended'>
       <div>Recommended</div>
       <div id='minibox'>
-        <div id='groupname'>Fruit</div>
-        <div id='groupname'>Card Games</div>
+        <!-- <div id='groupname'>Fruit</div>
+        <div id='groupname'>Card Games</div> -->
       </div>
     </div>
 
@@ -68,8 +68,8 @@
 
 function renderFollowedGroups(d){
 
-    var box = document.getElementById("box")
-    console.log(box)
+    var box = document.getElementById("box");
+    console.log(box);
 
     for(var i = 0; i< d.length; i ++){
         var item = document.createElement("DIV");
@@ -80,7 +80,7 @@ function renderFollowedGroups(d){
         var toppost = document.createElement("DIV");
         toppost.id = "toppost";
         toppost.innerText = d[i].text;
-        var link = document.createElement("A")
+        var link = document.createElement("A");
         link.href = "/groups/" + d[i].group;
         item.appendChild(groupname);
         item.appendChild(toppost);
@@ -88,6 +88,22 @@ function renderFollowedGroups(d){
         box.appendChild(link);
     }
 
+}
+
+function renderRecommended(d){
+    var box = document.getElementById("minibox");
+    console.log(box);
+
+    for(var i=0; i<d.length;i++){
+        if(i==2){break;}
+        var groupname = document.createElement("DIV");
+        groupname.id = "groupname";
+        groupname.innerText = d[i].group;
+        var link = document.createElement("A");
+        link.href = "/groups/"+d[i].group;
+        link.appendChild(groupname);
+        box.appendChild(link);
+    }
 }
 
 
@@ -98,11 +114,18 @@ function data(){
         renderFollowedGroups(data)
         console.log(data)
    });
-   }
+
+   fetch(`/home/recommended`)
+   .then(response => response.json())
+   .then(data => {
+       renderRecommended(data)
+       console.log(data)
+   });
+}
 
 window.onload = function() {
 
-    this.data()
+    this.data();
 }
 
 
