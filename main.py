@@ -177,16 +177,16 @@ def groupupdate(group):
 def messagecreate(group):
     messageM = request.form.get("message")
     messageU = get_user()
+    dateandtime = datetime.now()    
     
     message_key = data.key("Message")
     message = datastore.Entity(key=message_key)
     message["Text"] = messageM
     message["User"] = messageU
-    message["CreationTime"] = datetime.now()
+    message["CreationTime"] = dateandtime
+    message["DisplayTime"] = dateandtime.strftime("%x")
     message["GroupTitle"] = group
     data.put(message)
-
-    print(message["Text"])
 
     return jsonify(message)
 
@@ -206,7 +206,7 @@ def show_messages(group):
     msg.add_filter("GroupTitle","=",GroupTitle)
     msg.order = ["-CreationTime"]
     messages = msg.fetch()
-    output = [{"id" : x.id, "text":x["Text"], "user":x["User"], "creationtime": x["CreationTime"], "grouptitle": x["GroupTitle"]} for x in messages]
+    output = [{"id" : x.id, "text":x["Text"], "user":x["User"], "creationtime": x["CreationTime"], "grouptitle": x["GroupTitle"], "displaytime": x["DisplayTime"]} for x in messages]
 
     return jsonify(output)
 

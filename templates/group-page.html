@@ -85,7 +85,16 @@ textarea:disabled{
 }
 
 #msgbox{
-    width:auto;
+    width:85%;
+    float:left;
+    height:auto;
+    margin: 5px;
+    border-bottom-style: solid;
+}
+
+#datetimebox{
+    width:12%;
+    float:right;
     height:auto;
     margin: 5px;
     border-bottom-style: solid;
@@ -306,6 +315,9 @@ function createMessage() {
         popup.innerText = "Please Log In To Post Messages!";
         document.getElementsByName("message")[0].value = "";
     }else{
+        if(document.getElementsByName("message")[0].value==""){
+            return null;
+        }
         let data = new URLSearchParams();
         data.append("message", document.getElementsByName("message")[0].value);
         data.append("group", document.getElementById("grouptitle"));
@@ -321,11 +333,25 @@ function createMessage() {
 }
 
 function renderNewMessage(){
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = String(today.getFullYear());
+
+    today = mm + '/' + dd + '/' + yyyy;
+    today = today.toString();
+    today = today.substring(0,today.length-4)+today.substring(today.length-2,today.length);
+
     let msgdisplay = document.getElementById("msgdisplay");
     var msgbox = document.createElement("DIV");
+    var datetimebox = document.createElement("DIV");
     msgbox.id = "msgbox";
+    datetimebox.id = "datetimebox";
     var msg = document.createElement("p");
+    var datetime = document.createElement("p");
     msgbox.innerText = user+": "+document.getElementsByName("message")[0].value;
+    datetimebox.innerText = today;
+    msgdisplay.prepend(datetimebox);
     msgdisplay.prepend(msgbox);
 }
 
@@ -334,9 +360,13 @@ function renderMessages(d) {
     msgdisplay.innerHTML = "";
     for(var i=0;i<d.length;i++){
         var msgbox = document.createElement("DIV");
+        var datetimebox = document.createElement("DIV");
         msgbox.id = "msgbox";
-        var msg = document.createElement("p")
+        datetimebox.id = "datetimebox";
+        var msg = document.createElement("p");
+        var datetime = document.createElement("p");
         msgbox.innerText = d[i].user + ": "+ d[i].text; 
+        datetimebox.innerText = d[i].displaytime;
         if(owner == user){
             var del = document.createElement("BUTTON");
             del.type = 'button';
@@ -350,6 +380,7 @@ function renderMessages(d) {
             console.log("append")
         } 
         msgdisplay.appendChild(msgbox);
+        msgdisplay.append(datetimebox);
     }
 }
 
