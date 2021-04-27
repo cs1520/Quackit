@@ -129,6 +129,58 @@ button[type=submit]:hover{
     float: left;
 }
 
+.popup {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.popup .popuptext {
+  visibility: hidden;
+  width: 160px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -80px;
+}
+
+.popup .popuptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.popup .show {
+  visibility: visible;
+  -webkit-animation: fadeIn 1s;
+  animation: fadeIn 1s;
+}
+
+@-webkit-keyframes fadeIn {
+  from {opacity: 0;} 
+  to {opacity: 1;}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity:1 ;}
+}
+
 </style>
 
 
@@ -162,6 +214,7 @@ button[type=submit]:hover{
 
 <div id="messageboard">
   <div id="messageinput">
+    <p id = errormsg style = "color:red"> </p>      
     <input type = "text" id="input" name = "message" placeholder="Type Message Here...">
     <button type = submit onclick="createMessage()">Post Message</button>
   </div>
@@ -242,17 +295,29 @@ function updateRules(button){
     }
 }
 
+function toggleLogin(){
+    var popup = document.getElementById("loginPopup");
+    popup.classList.toggle("show");
+}
+
 function createMessage() {
-    let data = new URLSearchParams();
-    data.append("message", document.getElementsByName("message")[0].value);
-    data.append("group", document.getElementById("grouptitle"));
-    var url = "/groups/"+title+"/messagecreate";
-    fetch(url, {method: 'POST', body: data})
+    if(user=="None"){
+        var popup = document.getElementById("errormsg");
+        popup.innerText = "Please Log In To Post Messages!";
+        document.getElementsByName("message")[0].value = "";
+    }else{
+        let data = new URLSearchParams();
+        data.append("message", document.getElementsByName("message")[0].value);
+        data.append("group", document.getElementById("grouptitle"));
+        var url = "/groups/"+title+"/messagecreate";
+        fetch(url, {method: 'POST', body: data})
         .then((data) => {
             console.log(data);
         });
 
-    renderNewMessage();
+        renderNewMessage();
+        document.getElementsByName("message")[0].value = "";
+    }
 }
 
 function renderNewMessage(){
