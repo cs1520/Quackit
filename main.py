@@ -345,8 +345,13 @@ def profile():
         result = profilepicQuery.fetch()
         x = [{"profilepic": i["profile picture"]} for i in result]
         userpic = x[0]["profilepic"]
-        #userpic = "https://wallpapercave.com/wp/wp6489846.png"
-        return render_template("profile.html", name=user, pic = userpic)
+        
+        friendQuery = data.query(kind = 'Friends')
+        friendQuery.add_filter('User', '=', user )
+        fResult = friendQuery.fetch()
+        x2 = [{"friend": i["Friend"]} for i in fResult]
+
+        return render_template("profile.html", name=user, pic = userpic, friendList = x2)
 @app.route("/changeData", methods = ["GET"])
 def changeData():
     return render_template("changeData.html")
@@ -383,6 +388,31 @@ def imageUploadData():
     userData["profile picture"] = newPic
     data.put(userData)
     return redirect("/profile")
+
+@app.route("/friends", methods = ["GET"])
+def friends():
+    return render_template("friends.html")
+
+@app.route("/friends", methods = ["POST"])
+def addFriend():
+    currUser = get_user()
+    """if(currUser == None):
+        print("REDIRECTING")
+        redirect("/login")"""
+
+    newFriend = request.form.get("friendUser")
+    if(username_Auth(newFriend) == True):      #true means username doesn't exist. Recycling from register
+        return render_template("friends.html", failed = 1)
+    else: #Username does exist
+        key = data.key("Friends")
+        friendData = datastore.Entity(key = key)
+        friendData["User"] = currUser
+        friendData["Friend"] = newFriend
+        data.put(friendData)
+
+        return render_template("friends.html", failed = 2)
+
+
 
 """@app.route("/profile/<user>")
 def profile_user(user):
