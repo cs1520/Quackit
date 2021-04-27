@@ -97,6 +97,8 @@ def groupnav():
 @app.route("/groups/<group>", methods = ["GET"])
 def grouppage(group):
 
+    user = get_user()
+
     ug = data.query(kind="UserGroups")
     ug.add_filter("User","=",get_user())
     groups = ug.fetch()
@@ -107,7 +109,18 @@ def grouppage(group):
         if i["Group"] == group:
             follow = True
 
-    return render_template("group-page.html", name=group, user=get_user(), follow = follow)
+    profilepicQuery = data.query(kind = 'UserDetails')
+    profilepicQuery.add_filter('username', '=', user)    #to limit size for bugfixing
+    result = profilepicQuery.fetch()
+    x = [{"profilepic": i["profile picture"]} for i in result]
+    userpic = x[0]["profilepic"]
+        
+    friendQuery = data.query(kind = 'Friends')
+    friendQuery.add_filter('User', '=', user )
+    fResult = friendQuery.fetch()
+    x2 = [{"friend": i["Friend"]} for i in fResult]
+
+    return render_template("group-page.html", name=group, user=get_user(), follow = follow, pic = userpic, friendList = x2)
 
 
 
@@ -176,6 +189,7 @@ def groupupdate(group):
 @app.route("/groups/<group>/messagecreate", methods = ["POST"])
 def messagecreate(group):
     messageM = request.form.get("message")
+    messagePP = request.form.get("profilepic")
     messageU = get_user()
     dateandtime = datetime.now()    
     
@@ -186,6 +200,7 @@ def messagecreate(group):
     message["CreationTime"] = dateandtime
     message["DisplayTime"] = dateandtime.strftime("%x")
     message["GroupTitle"] = group
+    message["ProfilePic"] = messagePP
     data.put(message)
 
     return jsonify(message)
@@ -206,7 +221,7 @@ def show_messages(group):
     msg.add_filter("GroupTitle","=",GroupTitle)
     msg.order = ["-CreationTime"]
     messages = msg.fetch()
-    output = [{"id" : x.id, "text":x["Text"], "user":x["User"], "creationtime": x["CreationTime"], "grouptitle": x["GroupTitle"], "displaytime": x["DisplayTime"]} for x in messages]
+    output = [{"id" : x.id, "text":x["Text"], "user":x["User"], "creationtime": x["CreationTime"], "grouptitle": x["GroupTitle"], "displaytime": x["DisplayTime"], "profilepic": x["ProfilePic"]} for x in messages]
 
     return jsonify(output)
 

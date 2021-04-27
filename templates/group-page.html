@@ -85,7 +85,7 @@ textarea:disabled{
 }
 
 #msgbox{
-    width:85%;
+    width:75%;
     float:left;
     height:auto;
     margin: 5px;
@@ -232,9 +232,11 @@ button[type=submit]:hover{
 </div>
 
 <script type='text/javascript'>
-var title = '{{ name }}'
-var user = '{{ user }}'
-var follow = '{{ follow }}'
+var title = '{{ name }}';
+var user = '{{ user }}';
+var follow = '{{ follow }}';
+var profilepic = '{{ pic }}';
+var friendList = '{{ friendList | tojson}}'
 var owner = null;
 var prim = null;
 var sec = null;
@@ -321,6 +323,7 @@ function createMessage() {
         let data = new URLSearchParams();
         data.append("message", document.getElementsByName("message")[0].value);
         data.append("group", document.getElementById("grouptitle"));
+        data.append("profilepic", profilepic);
         var url = "/groups/"+title+"/messagecreate";
         fetch(url, {method: 'POST', body: data})
         .then((data) => {
@@ -344,29 +347,45 @@ function renderNewMessage(){
 
     let msgdisplay = document.getElementById("msgdisplay");
     var msgbox = document.createElement("DIV");
-    var datetimebox = document.createElement("DIV");
     msgbox.id = "msgbox";
-    datetimebox.id = "datetimebox";
     var msg = document.createElement("p");
-    var datetime = document.createElement("p");
     msgbox.innerText = user+": "+document.getElementsByName("message")[0].value;
+
+    var datetimebox = document.createElement("DIV");
+    datetimebox.id = "datetimebox";
+    var datetime = document.createElement("p");
     datetimebox.innerText = today;
+
+    var img = document.createElement("img");
+    img.src = profilepic;
+    img.style.width = "40px";
+    img.style.height = "40px";
+
     msgdisplay.prepend(datetimebox);
     msgdisplay.prepend(msgbox);
+    msgbox.prepend(img);
 }
 
 function renderMessages(d) {
     let msgdisplay = document.getElementById("msgdisplay");
     msgdisplay.innerHTML = "";
+    var pic = null;
     for(var i=0;i<d.length;i++){
         var msgbox = document.createElement("DIV");
-        var datetimebox = document.createElement("DIV");
         msgbox.id = "msgbox";
-        datetimebox.id = "datetimebox";
         var msg = document.createElement("p");
-        var datetime = document.createElement("p");
         msgbox.innerText = d[i].user + ": "+ d[i].text; 
+
+        var datetimebox = document.createElement("DIV");
+        datetimebox.id = "datetimebox";
+        var datetime = document.createElement("p");
         datetimebox.innerText = d[i].displaytime;
+
+        var img = document.createElement("img");
+        img.src = d[i].profilepic;
+        img.style.width = "40px";
+        img.style.height = "40px";
+
         if(owner == user){
             var del = document.createElement("BUTTON");
             del.type = 'button';
@@ -381,6 +400,7 @@ function renderMessages(d) {
         } 
         msgdisplay.appendChild(msgbox);
         msgdisplay.append(datetimebox);
+        msgbox.prepend(img);
     }
 }
 
