@@ -182,6 +182,21 @@ a{
   padding-right: 20px;
   padding-top: 20px;
 }
+
+#messageCounter{
+  height: auto;
+  float: right;
+  padding-right: 200px;
+  padding-top: 20px;
+}
+
+#userData{
+  width: 30%;
+  height: auto;
+  float: left;
+  padding-left: 20px;
+  padding-top: 20px;
+}
 </style>
 <head>
     <title>Profile</title>
@@ -201,15 +216,23 @@ a{
         <h2>Your Friends:</h2>       
         <a href = "/friends">Add New Friends!</a>
     </div>
+
+    
+    <div id = messageCounter>
+        <h2>Your Lifetime Message Count</h2>
+        <p id = counter style = 'font-size: 18px; font-style: italic'> <p>
+    </div>
         
     <!--<div id = login><a href = '/login'>Login</a></div>-->
-     <img id = userprofilepicture height = 200px width = 200px src =""></img>
 
-    <div>
-        <h3 id = hellomessage>Text</h3></div>
-    <a href = '/changeData'>Change Password</a>
-    <p></p>
-    <a href = '/imageUpload'>Upload New Profile Picture</a>
+    <div id = userData>
+        <h3 id = hellomessage>Text</h3>
+        <img id = userprofilepicture height = 200px width = 200px src =""></img>
+        <p></p>
+        <a href = '/changeData'>Change Password</a>
+        <p></p>
+        <a href = '/imageUpload'>Upload New Profile Picture</a>
+    </div>
        
 
 
@@ -218,9 +241,11 @@ a{
     var username = '{{ name }}';
     var profilepics = '{{ pic | tojson}}';
     var friendList = '{{ friendList | tojson}}';
-    var str = '';
+    var Mc = '{{ messageCount | tojson}}';
+    //var str = '';
     var uFriends = JSON.parse(friendList);
     var pics = JSON.parse(profilepics);
+    var mCount = JSON.parse(Mc);
 
     document.getElementById("hellomessage").innerText = "Hello, " + username;
     
@@ -231,6 +256,13 @@ a{
                 document.getElementById("userprofilepicture").src = pics[i].profilepic;
             }
         }     
+    }
+
+    //Loads message count
+    if(mCount != null){
+        document.getElementById("counter").innerText = "You have posted " + mCount.length + " messages!"
+    } else {
+        document.getElementById("counter").innerText = "It looks like you haven't posted any messages yet..."
     }
 
 

@@ -372,7 +372,12 @@ def profile():
         fResult = friendQuery.fetch()
         x2 = [{"friend": i["Friend"]} for i in fResult]
 
-        return render_template("profile.html", name=user, pic = x, friendList = x2)
+        MCquery = data.query(kind = 'Message')
+        MCquery.add_filter('User', '=', user)
+        MCresult = MCquery.fetch()
+        x3 = [{"User": i["User"]} for i in MCresult]
+
+        return render_template("profile.html", name=user, pic = x, friendList = x2, messageCount = x3)
 @app.route("/changeData", methods = ["GET"])
 def changeData():
     return render_template("changeData.html")
