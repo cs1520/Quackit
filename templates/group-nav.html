@@ -81,13 +81,14 @@ input[type=color]{
 
     <div id='profile'><a href='/profile'>Profile</a></div>
     <div id='quackit'><a href='/'>Quackit</a></div>
-    <div id='friends'><a href = '/friends'>Friends</a></div>
+    <div id='friends'>Friends</div>
     <div id='groups'><a href='/groups'>Groups</a></div>
     <div id='search'>Search</div>
   </div>
 
   <div id='searchbar'>
-    <input type="text" id="input" name="search" placeholder="Search (non-functioning">
+    <input type="text" id="input" name="search" placeholder="Search" style='width:70%; float:left;'>
+    <button type="submit" onclick="search()" style="width:30%; float:right;">Search</button>    
   </div>
 
   <div id='addgroup'>
@@ -120,6 +121,25 @@ input[type=color]{
 
 <script>
 
+function search() {
+    var sea = document.getElementsByName("search")[0].value;
+
+    var groups = document.getElementsByClassName("groupselect");
+    console.log(groups)
+    for(var i = 0; i<groups.length;i++){
+        console.log(groups[i].innerText)
+        var parent = groups[i].parentElement;
+        if(!groups[i].innerText.toLowerCase().includes(sea)){
+            parent.style.display = "none";     
+            console.log("hide");       
+        }
+        else{
+            parent.style.display = "block";
+            console.log("block");
+        }
+    }
+}
+
 function showGroup() {
     console.log("hello")
     document.getElementById("groupForm").style.display = "block";
@@ -144,11 +164,10 @@ function renderList(d) {
 
     let allOptions = document.getElementById("alloptions");
 
-    console.log("hello");
-
     for(var i = 0; i < d.length; i ++){
         var name = document.createElement("DIV");
         name.id = 'groupselect';
+        name.className = 'groupselect'
         name.style.backgroundColor = d[i].secondary;
         var link = document.createElement("A");
         link.href = "/groups/" + d[i].title;
