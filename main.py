@@ -92,7 +92,7 @@ def home_activeFriends():
             break
 
     x = []
-    for i in range(len(userFriends)):
+    for i in range(len(lastMessages)):
         lmuEntry = [{"friend":userFriends[i], "lastmessage": lastMessages[i]}]
         x.append(lmuEntry[0])
     
@@ -118,6 +118,8 @@ def home_fof():
     for i in afResult:
         f = 0
         for j in range(len(userFriends)):
+            if(userFriends[j]==user):
+                f=1
             if(i["Friend"]==userFriends[j]):
                 f=1
         if(f==0):
