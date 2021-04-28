@@ -114,7 +114,7 @@ def home_fof():
     userFriendQuery.add_filter('User', '=', user )
     ufResult = userFriendQuery.fetch()
 
-    allFriendQuery = data.query(kind = 'Friends')
+    allFriendQuery = data.query(kind = 'UserCredential')
     afResult = allFriendQuery.fetch()
     
     for i in ufResult:        
@@ -123,12 +123,12 @@ def home_fof():
     for i in afResult:
         f = 0
         for j in range(len(userFriends)):
-            if(userFriends[j]==user):
+            if(i["username"]==user):
                 f=1
-            if(i["Friend"]==userFriends[j]):
+            if(i["username"]==userFriends[j]):
                 f=1
         if(f==0):
-            ff = [{"friend": i["Friend"]}]
+            ff = [{"friend": i["username"]}]
             fof.append(ff[0])
         
     #for i in range(len(userFriends)):
