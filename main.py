@@ -162,7 +162,7 @@ def login_data():
     #print(username + " " + password)
 
     if(verify_password(username, password)):
-        print(username + " has logged in successfully")
+        #print(username + " has logged in successfully")
         return redirect("/")
     else:
         print("Login failed")
@@ -390,7 +390,7 @@ def verify_password(username, password):
         result = user.fetch()
 
         if(result == None):
-            print("result is null")
+            #print("result is null")
             return False
 
         userData = [{"U": i["username"], "P": i["hashPassword"], "S": i["salt"]} for i in result]
@@ -401,6 +401,9 @@ def verify_password(username, password):
 
         #userSalt = str(userData[0]["S"])
         #print(userSalt)
+
+        #if(username_Auth(username) == False):
+            #return False        
 
         if(userData[0]["U"] == username):
             print("Username Match!")
@@ -438,17 +441,22 @@ def profile():
             return redirect("/login")
     else:
         profilepicQuery = data.query(kind = 'UserDetails')
-        profilepicQuery.add_filter('username', '=', user)    #to limit size for bugfixing
+        #profilepicQuery.add_filter('username', '=', user)    #to limit size for bugfixing
         result = profilepicQuery.fetch()
-        x = [{"profilepic": i["profile picture"]} for i in result]
-        userpic = x[0]["profilepic"]
+        x = [{"User": i["username"], "profilepic": i["profile picture"]} for i in result]
+        #userpic = x[0]["profilepic"]
         
         friendQuery = data.query(kind = 'Friends')
         friendQuery.add_filter('User', '=', user )
         fResult = friendQuery.fetch()
         x2 = [{"friend": i["Friend"]} for i in fResult]
 
-        return render_template("profile.html", name=user, pic = userpic, friendList = x2)
+        MCquery = data.query(kind = 'Message')
+        MCquery.add_filter('User', '=', user)
+        MCresult = MCquery.fetch()
+        x3 = [{"User": i["User"]} for i in MCresult]
+
+        return render_template("profile.html", name=user, pic = x, friendList = x2, messageCount = x3)
 @app.route("/changeData", methods = ["GET"])
 def changeData():
     return render_template("changeData.html")
