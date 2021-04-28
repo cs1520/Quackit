@@ -91,7 +91,7 @@
 
             div = this.createEls('div', {className: 'loading-modal'});
             table = this.createEls('table', {className: 'loading-table'});
-            img = this.createEls('img', {className: 'loading-image', src: './templates/loading.svg'});
+            img = this.createEls('img', {className: 'loading-image', src: 'loading.svg'});
 
             div.appendChild(table);
             table.appendChild(img);

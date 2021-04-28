@@ -69,6 +69,92 @@ def home_recommended():
 
     return jsonify(not_followed)
 
+@app.route("/home/activeFriends", methods = ["GET"])
+def home_activeFriends():
+    user = get_user()
+
+    userFriendQuery = data.query(kind = 'Friends')
+    userFriendQuery.add_filter('User','=',user)
+    ufResult = userFriendQuery.fetch()
+
+    userFriends = []
+    lastMessages = []
+
+    for i in ufResult:        
+        userFriends.append(i["Friend"])
+
+    for i in range(len(userFriends)):
+        lastMessageQuery = data.query(kind = 'Message')
+        lastMessageQuery.add_filter('User','=',userFriends[i])
+        lmq = lastMessageQuery.fetch()
+        messages = []
+        for j in lmq:
+            messages.append(j["Text"])
+        if(len(messages)==0):
+            continue
+        for j in range(len(messages)):
+            lastMessages.append(messages[j])
+            break
+
+    x = []
+    for i in range(len(lastMessages)):
+        lmuEntry = [{"friend":userFriends[i], "lastmessage": lastMessages[i]}]
+        x.append(lmuEntry[0])
+    
+    return jsonify(x)
+
+@app.route("/home/fof", methods = ["GET"])
+def home_fof():
+    user = get_user()
+    
+    userFriends = []
+    fof = []
+    
+    userFriendQuery = data.query(kind = 'Friends')
+    userFriendQuery.add_filter('User', '=', user )
+    ufResult = userFriendQuery.fetch()
+
+    allFriendQuery = data.query(kind = 'Friends')
+    afResult = allFriendQuery.fetch()
+    
+    for i in ufResult:        
+        userFriends.append(i["Friend"])
+
+    for i in afResult:
+        f = 0
+        for j in range(len(userFriends)):
+            if(userFriends[j]==user):
+                f=1
+            if(i["Friend"]==userFriends[j]):
+                f=1
+        if(f==0):
+            ff = [{"friend": i["Friend"]}]
+            fof.append(ff[0])
+        
+    #for i in range(len(userFriends)):
+    #    fofQuery = data.query(kind="Friends")
+    #    fofQuery.add_filter('User','=',userFriends[i])
+    #    fofResult = fofQuery.fetch()
+
+    #    foaf = []
+    #    for j in fofResult:
+    #        foaf.append(j["Friend"])
+
+    #    for j in fofResult:
+    #        currFriend = j["Friend"]
+    #        mutual = 0
+    #        for k in range(len(userFriends)):
+    #            if(currFriend==userFriends[k]):
+    #                mutual = 1
+    #        if(mutual==0):
+    #            fof.append(currFriend)
+
+    #x = []
+    #for i in range(len(fof)):
+    #    newEntry = [{"fof": fof[i]}]
+    #    x.append(newEntry[0])
+
+    return jsonify(fof)
 
 @app.route("/login", methods = ["GET"])
 def login():
@@ -83,7 +169,7 @@ def login_data():
     #print(username + " " + password)
 
     if(verify_password(username, password)):
-        print(username + " has logged in successfully")
+        #print(username + " has logged in successfully")
         return redirect("/")
     else:
         print("Login failed")
@@ -311,7 +397,7 @@ def verify_password(username, password):
         result = user.fetch()
 
         if(result == None):
-            print("result is null")
+            #print("result is null")
             return False
 
         userData = [{"U": i["username"], "P": i["hashPassword"], "S": i["salt"]} for i in result]
@@ -322,6 +408,9 @@ def verify_password(username, password):
 
         #userSalt = str(userData[0]["S"])
         #print(userSalt)
+
+        #if(username_Auth(username) == False):
+            #return False        
 
         if(userData[0]["U"] == username):
             print("Username Match!")
@@ -359,17 +448,22 @@ def profile():
             return redirect("/login")
     else:
         profilepicQuery = data.query(kind = 'UserDetails')
-        profilepicQuery.add_filter('username', '=', user)    #to limit size for bugfixing
+        #profilepicQuery.add_filter('username', '=', user)    #to limit size for bugfixing
         result = profilepicQuery.fetch()
-        x = [{"profilepic": i["profile picture"]} for i in result]
-        userpic = x[0]["profilepic"]
+        x = [{"User": i["username"], "profilepic": i["profile picture"]} for i in result]
+        #userpic = x[0]["profilepic"]
         
         friendQuery = data.query(kind = 'Friends')
         friendQuery.add_filter('User', '=', user )
         fResult = friendQuery.fetch()
         x2 = [{"friend": i["Friend"]} for i in fResult]
 
-        return render_template("profile.html", name=user, pic = userpic, friendList = x2)
+        MCquery = data.query(kind = 'Message')
+        MCquery.add_filter('User', '=', user)
+        MCresult = MCquery.fetch()
+        x3 = [{"User": i["User"]} for i in MCresult]
+
+        return render_template("profile.html", name=user, pic = x, friendList = x2, messageCount = x3)
 @app.route("/changeData", methods = ["GET"])
 def changeData():
     return render_template("changeData.html")

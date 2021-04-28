@@ -10,7 +10,7 @@
 
     <div id='profile'><a href='/profile'>Profile</a></div>
     <div id='quackit'><a href='/'>Quackit</a></div>
-    <div id='friends'>Friends</div>
+    <div id='friends'><a href = '/friends'>Friends</a></div>
     <div id='groups'><a href='/groups'>Groups</a></div>
     <div id='search'>Search</div>
   </div>
@@ -18,7 +18,7 @@
   <div id='section'>
     <div id='active'>
       <div>Active Groups</div>
-      <div id='box'>
+      <div id='box' name='activegroupsbox'>
        <!-- <div id='item'>
           <div id='groupname'>Movies</div>
           <div id='toppost'>"Whats your favorite movie?"</div>
@@ -34,11 +34,11 @@
   <div id='section'>
     <div id='active'>
       <div>Active Friends</div>
-      <div id='box'>
-        <div id='item'>
+      <div id='box' name='activefriendsbox'>
+        <!-- <div id='item'>
           <div id='groupname'>Drew posted</div>
           <div id='toppost'>"I like pineapples"</div>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -46,20 +46,20 @@
   <div id='section'>
     <div id='Recommended'>
       <div>Recommended</div>
-      <div id='minibox'>
-        <!-- <div id='groupname'>Fruit</div>
-        <div id='groupname'>Card Games</div> -->
-      </div>
+      <!--<div id='minibox'>
+        <div id='groupname'>Fruit</div>
+        <div id='groupname'>Card Games</div>
+      </div> -->
     </div>
 
     <div id='line'></div>
 
       <div id='recfriends'>
         <div>Friends of Friends</div>
-        <div id='minibox'>
+        <!--<div id='minibox'>
           <div id='groupname'>Barrack</div>
           <div id='groupname'>Michelle</div>
-        </div>
+        </div>-->
       </div>
     </div>
 
@@ -68,7 +68,7 @@
 
 function renderFollowedGroups(d){
 
-    var box = document.getElementById("box");
+    var box = document.getElementsByName("activegroupsbox")[0];
     console.log(box);
 
     for(var i = 0; i< d.length; i ++){
@@ -91,8 +91,9 @@ function renderFollowedGroups(d){
 }
 
 function renderRecommended(d){
-    var box = document.getElementById("minibox");
-    console.log(box);
+    var rec = document.getElementById("Recommended");
+    var box = document.createElement("DIV");
+    box.id = "minibox";
 
     for(var i=0; i<d.length;i++){
         if(i==2){break;}
@@ -104,8 +105,48 @@ function renderRecommended(d){
         link.appendChild(groupname);
         box.appendChild(link);
     }
+    rec.appendChild(box);
 }
 
+function renderActiveFriends(d){
+    var box = document.getElementsByName("activefriendsbox")[0];
+    var str = '';
+    for(var i=0; i<d.length; i++){
+        if(i==2){break;}
+        str = '';
+        var item = document.createElement("DIV");
+        item.id = "item";
+        var friendname = document.createElement("DIV");
+        friendname.id = "groupname";
+        var lastmessage = document.createElement("DIV");
+        lastmessage.id = "toppost";
+        str+=d[i].friend+' posted';
+        friendname.innerText = str;
+        str = '\"'+d[i].lastmessage+'\"'
+        lastmessage.innerText = str;
+        item.appendChild(friendname);
+        item.appendChild(lastmessage);
+        box.appendChild(item);
+    }
+}
+
+function renderFOF(d){
+    var recFriends = document.getElementById("recfriends");
+    var box = document.createElement("DIV");
+    box.id = "minibox";
+    var str = '';
+    
+    for(var i=0; i<d.length;i++){
+        str = '';
+        if(i==2){break;}
+        var friendname = document.createElement("DIV");
+        friendname.id = "groupname";
+        str+=d[i].friend;
+        friendname.innerText = d[i].friend;
+        box.appendChild(friendname);
+    }
+    recFriends.appendChild(box);
+}
 
 function data(){
     fetch(`/home/info`)
@@ -119,6 +160,20 @@ function data(){
    .then(response => response.json())
    .then(data => {
        renderRecommended(data)
+       console.log(data)
+   });
+
+   fetch(`/home/activeFriends`)
+   .then(response => response.json())
+   .then(data => {
+       renderActiveFriends(data)
+       console.log(data)
+   });
+   
+   fetch(`/home/fof`)
+   .then(response => response.json())
+   .then(data => {
+       renderFOF(data)
        console.log(data)
    });
 }
