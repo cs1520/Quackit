@@ -137,7 +137,7 @@ function renderActiveFriends(d){
         friendname.id = "groupname";
         var lastmessage = document.createElement("DIV");
         lastmessage.id = "toppost";
-        str+=d[i].friend+' posted';
+        str+=d[i].friend;
         friendname.innerText = str;
         str = '\"'+d[i].lastmessage+'\"'
         var link = document.createElement("A");
