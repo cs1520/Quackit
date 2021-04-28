@@ -88,7 +88,11 @@ function renderFollowedGroups(d){
         groupname.innerText = d[i].group;
         var toppost = document.createElement("DIV");
         toppost.id = "toppost";
-        toppost.innerText = '\"'+d[i].text+'\"';
+        if(d[i].text.length>60){
+            toppost.innerText = '\"'+d[i].text.substring(0,60)+'...\"'
+        }else{
+            toppost.innerText = '\"'+d[i].text+'\"';
+        }
         var link = document.createElement("A");
         link.href = "/groups/" + d[i].group;
         item.appendChild(groupname);
@@ -139,10 +143,13 @@ function renderActiveFriends(d){
         lastmessage.id = "toppost";
         str+=d[i].friend;
         friendname.innerText = str;
-        str = '\"'+d[i].lastmessage+'\"'
+        if(d[i].lastmessage.length>60){
+            lastmessage.innerText = '\"'+d[i].lastmessage.substring(0,60)+'...\"';
+        }else{
+            lastmessage.innerText = '\"'+d[i].lastmessage+'\"';
+        }
         var link = document.createElement("A");
         link.href = "/groups/"+d[i].messagegroup;
-        lastmessage.innerText = str;
         link.appendChild(friendname);
         link.appendChild(lastmessage);
         item.appendChild(link);
