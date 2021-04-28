@@ -69,6 +69,85 @@ def home_recommended():
 
     return jsonify(not_followed)
 
+@app.route("/home/activeFriends", methods = ["GET"])
+def home_activeFriends():
+    user = get_user()
+
+    userFriendQuery = data.query(kind = 'Friends')
+    userFriendQuery.add_filter('User','=',user)
+    ufResult = userFriendQuery.fetch()
+
+    userFriends = []
+    lastMessages = []
+
+    for i in ufResult:        
+        userFriends.append(i["Friend"])
+
+    for i in range(len(userFriends)):
+        lastMessageQuery = data.query(kind = 'Message')
+        lastMessageQuery.add_filter('User','=',userFriends[i])
+        lmq = lastMessageQuery.fetch()
+        for j in lmq:
+            lastMessages.append(j["Text"])
+            break
+
+    x = []
+    for i in range(len(userFriends)):
+        lmuEntry = [{"friend":userFriends[i], "lastmessage": lastMessages[i]}]
+        x.append(lmuEntry[0])
+    
+    return jsonify(x)
+
+@app.route("/home/fof", methods = ["GET"])
+def home_fof():
+    user = get_user()
+    
+    userFriends = []
+    fof = []
+    
+    userFriendQuery = data.query(kind = 'Friends')
+    userFriendQuery.add_filter('User', '=', user )
+    ufResult = userFriendQuery.fetch()
+
+    allFriendQuery = data.query(kind = 'Friends')
+    afResult = allFriendQuery.fetch()
+    
+    for i in ufResult:        
+        userFriends.append(i["Friend"])
+
+    for i in afResult:
+        f = 0
+        for j in range(len(userFriends)):
+            if(i["Friend"]==userFriends[j]):
+                f=1
+        if(f==0):
+            ff = [{"friend": i["Friend"]}]
+            fof.append(ff[0])
+        
+    #for i in range(len(userFriends)):
+    #    fofQuery = data.query(kind="Friends")
+    #    fofQuery.add_filter('User','=',userFriends[i])
+    #    fofResult = fofQuery.fetch()
+
+    #    foaf = []
+    #    for j in fofResult:
+    #        foaf.append(j["Friend"])
+
+    #    for j in fofResult:
+    #        currFriend = j["Friend"]
+    #        mutual = 0
+    #        for k in range(len(userFriends)):
+    #            if(currFriend==userFriends[k]):
+    #                mutual = 1
+    #        if(mutual==0):
+    #            fof.append(currFriend)
+
+    #x = []
+    #for i in range(len(fof)):
+    #    newEntry = [{"fof": fof[i]}]
+    #    x.append(newEntry[0])
+
+    return jsonify(fof)
 
 @app.route("/login", methods = ["GET"])
 def login():
