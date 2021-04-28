@@ -94,7 +94,13 @@ input[type=color]{
     <button id='create' type = submit onclick="showGroup()">Create New Group</button>
     <div id="groupForm" style="display: none;">
         <input type="text" id="input" name="title" placeholder="Enter Group Title">
-        <input type="text" id="input" name="banner" placeholder="Enter Banner Image URL">
+        <!--<input type="text" id="input" name="banner" placeholder="Enter Banner Image URL">-->
+        <div id="fileupload">
+            <div style="width:20%; float:left; color:black;">Select Banner Image :</div>
+                <div class="dropzone">
+                    <div class="info"></div>
+                </div>
+        </div>
         <div id="colorpick">
             <div style="width:20%; float:left;">Pick Text Color :</div>
             <input type="color" name="primary" value="#008000">
@@ -103,13 +109,14 @@ input[type=color]{
             <div style="width:20%; float:left;">Pick Background Color :</div> 
             <input type="color" name="secondary" value="#fcfc8d">
         </div>
-        <button type = submit onclick="createGroup()">Create New Group</button>
+        <button type = submit onclick="createGroup()" id="createButton">Create New Group</button>
     </div>
   </div>
 
   <div id="alloptions">
     <!--<div id="groupname"><a style='color: #fcfc8d' href='/groups/Space'>Space</a></div>-->
   </div>
+
 
 <script>
 
@@ -122,7 +129,7 @@ function showGroup() {
 function createGroup() {
         let data = new URLSearchParams();
         data.append("title", document.getElementsByName("title")[0].value);
-        data.append("banner",document.getElementsByName("banner")[0].value);
+        data.append("banner",document.getElementById("createButton").value);
         data.append("primary",document.getElementsByName("primary")[0].value);
         data.append("secondary",document.getElementsByName("secondary")[0].value);
         fetch(`/groupcreate`, { method: 'POST', body: data })
@@ -169,6 +176,205 @@ window.onload = function() {
     this.data();
 
 }
+
+// imgur.js
+        (function (root, factory) {
+    "use strict";
+    if (typeof define === 'function' && define.amd) {
+        define([], factory);
+    } else if (typeof exports === 'object') {
+        module.exports = factory();
+    } else {
+        root.Imgur = factory();
+    }
+}(this, function () {
+    "use strict";
+    var Imgur = function (options) {
+        if (!this || !(this instanceof Imgur)) {
+            return new Imgur(options);
+        }
+
+        if (!options) {
+            options = {};
+        }
+
+        if (!options.clientid) {
+            throw 'Provide a valid Client Id here: https://api.imgur.com/';
+        }
+
+        this.clientid = options.clientid;
+        this.endpoint = 'https://api.imgur.com/3/image';
+        this.callback = options.callback || undefined;
+        this.dropzone = document.querySelectorAll('.dropzone');
+        this.info = document.querySelectorAll('.info');
+        this.run();
+    };
+
+    Imgur.prototype = {
+        createEls: function (name, props, text) {
+            var el = document.createElement(name), p;
+            for (p in props) {
+                if (props.hasOwnProperty(p)) {
+                    el[p] = props[p];
+                }
+            }
+            if (text) {
+                el.appendChild(document.createTextNode(text));
+            }
+            return el;
+        },
+        insertAfter: function (referenceNode, newNode) {
+            referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+        },
+        post: function (path, data, callback) {
+            var xhttp = new XMLHttpRequest();
+
+            xhttp.open('POST', path, true);
+            xhttp.setRequestHeader('Authorization', 'Client-ID ' + this.clientid);
+            xhttp.onreadystatechange = function () {
+                if (this.readyState === 4) {
+                    if (this.status >= 200 && this.status < 300) {
+                        var response = '';
+                        try {
+                            response = JSON.parse(this.responseText);
+                        } catch (err) {
+                            response = this.responseText;
+                        }
+                        callback.call(window, response);
+                    } else {
+                        throw new Error(this.status + " - " + this.statusText);
+                    }
+                }
+            };
+            xhttp.send(data);
+            xhttp = null;
+        },
+        createDragZone: function () {
+            var p1, p2, input;
+
+                //p1 = this.createEls('p', {}, 'Drop Image File Here');
+                //p2 = this.createEls('p', {}, 'Or click here to select image');
+            input = this.createEls('input', {type: 'file', multiple: 'multiple', className: 'input', accept: 'image/*', id:'file'});
+
+            Array.prototype.forEach.call(this.info, function (zone) {
+                //zone.appendChild(p1);
+                //zone.appendChild(p2);
+            }.bind(this));
+            Array.prototype.forEach.call(this.dropzone, function (zone) {
+                zone.appendChild(input);
+                this.status(zone);
+                this.upload(zone);
+            }.bind(this));
+        },
+        loading: function () {
+            var div, table, img;
+
+            //div = this.createEls('div', {className: 'loading-modal'});
+            //table = this.createEls('table', {className: 'loading-table'});
+            //img = this.createEls('img', {className: 'loading-image', src: './templates/loading.svg'});
+
+            //div.appendChild(table);
+            //table.appendChild(img);
+            //document.body.appendChild(div);
+        },
+        status: function (el) {
+            var div = this.createEls('div', {className: 'status'});
+
+            this.insertAfter(el, div);
+        },
+        matchFiles: function (file, zone, fileCount) {
+            var status = zone.nextSibling;
+
+            if (file.type.match(/image/) && file.type !== 'image/svg+xml') {
+                document.body.classList.add('loading');
+                status.classList.remove('bg-success', 'bg-danger');
+                status.innerHTML = '';
+
+                var fd = new FormData();
+                fd.append('image', file);
+
+                this.post(this.endpoint, fd, function (data) {
+                    if (fileCount[0]+1 == fileCount[1]) {
+                        document.body.classList.remove('loading');
+                    }
+                    typeof this.callback === 'function' && this.callback.call(this, data);
+                }.bind(this));
+            } else {
+                status.classList.remove('bg-success');
+                status.classList.add('bg-danger');
+                status.innerHTML = 'Invalid archive';
+            }
+        },
+        upload: function (zone) {
+            var events = ['dragenter', 'dragleave', 'dragover', 'drop'],
+                file, target, i, len;
+
+            zone.addEventListener('change', function (e) {
+                if (e.target && e.target.nodeName === 'INPUT' && e.target.type === 'file') {
+                    target = e.target.files;
+
+                    for (i = 0, len = target.length; i < len; i += 1) {
+                        file = target[i];
+                        this.matchFiles(file, zone, [i, target.length]);
+                    }
+                }
+            }.bind(this), false);
+
+            events.map(function (event) {
+                zone.addEventListener(event, function (e) {
+                    if (e.target && e.target.nodeName === 'INPUT' && e.target.type === 'file') {
+                        if (event === 'dragleave' || event === 'drop') {
+                            e.target.parentNode.classList.remove('dropzone-dragging');
+                        } else {
+                            e.target.parentNode.classList.add('dropzone-dragging');
+                        }
+                    }
+                }, false);
+            });
+        },
+        run: function () {
+            var loadingModal = document.querySelector('.loading-modal');
+
+            if (!loadingModal) {
+                this.loading();
+            }
+            this.createDragZone();
+        }
+    };
+
+    return Imgur;
+}));
+
+// upload.js
+
+function reportInfo(vars, showType = false) {
+    if (showType === true) console.log(typeof vars);
+    console.log(vars);
+}
+
+function addImg(ele, content) {
+    var myDIV = document.querySelector(ele);
+    var newContent = document.createElement('div');
+    newContent.innerHTML = content;
+
+    while (newContent.firstChild) {
+        myDIV.appendChild(newContent.firstChild);
+    }
+}
+
+var feedback = function(res) {
+    reportInfo(res, true);
+    if (res.success === true) {
+        var get_link = res.data.link.replace(/^http:\/\//i, 'https://');
+        document.getElementById("createButton").value = get_link;
+    }
+};
+
+new Imgur({
+    clientid: '91457b1495312a6', 
+    callback: feedback
+});
+
 
 </script>
 </html>
