@@ -276,7 +276,6 @@ def groupupdate(group):
 
     return jsonify(g)
 
-
 @app.route("/groups/<group>/messagecreate", methods = ["POST"])
 def messagecreate(group):
     messageM = request.form.get("message")
