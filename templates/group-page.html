@@ -85,7 +85,7 @@ textarea:disabled{
 }
 
 #msgbox{
-    width:75%;
+    width:80%;
     float:left;
     height:auto;
     margin: 5px;
@@ -93,11 +93,25 @@ textarea:disabled{
 }
 
 #datetimebox{
-    width:12%;
+    width:10%;
     float:right;
     height:auto;
     margin: 5px;
     border-bottom-style: solid;
+}
+
+#profilepicbox{
+    width: 50px;
+    height: 50px;
+    float: left;
+    margin: 5px;
+}
+
+#fullmessagebox{
+    width:100%;
+    height:auto;
+    float:left;
+    margin:5px;
 }
 
 button[type=submit]:hover{
@@ -356,14 +370,24 @@ function renderNewMessage(){
     var datetime = document.createElement("p");
     datetimebox.innerText = today;
 
+    var profilepicbox = document.createElement("DIV");
+    profilepicbox.id = "profilepicbox";
     var img = document.createElement("img");
     img.src = profilepic;
     img.style.width = "40px";
     img.style.height = "40px";
+    img.style.borderRadius = "16px";
+    img.border = "1px solid #ddd";
+    img.padding = "5px";
+    profilepicbox.appendChild(img);
 
-    msgdisplay.prepend(datetimebox);
-    msgdisplay.prepend(msgbox);
-    msgbox.prepend(img);
+    var fullMessage = document.createElement("SPAN");
+    fullMessage.id = "fullmessagebox";
+    fullMessage.appendChild(profilepicbox);
+    fullMessage.appendChild(msgbox);
+    fullMessage.appendChild(datetimebox);
+
+    msgdisplay.prepend(fullMessage);
 }
 
 function renderMessages(d) {
@@ -371,20 +395,32 @@ function renderMessages(d) {
     msgdisplay.innerHTML = "";
     var pic = null;
     for(var i=0;i<d.length;i++){
-        var msgbox = document.createElement("DIV");
+        var msgbox = document.createElement("SPAN");
         msgbox.id = "msgbox";
         var msg = document.createElement("p");
         msgbox.innerText = d[i].user + ": "+ d[i].text; 
 
-        var datetimebox = document.createElement("DIV");
+        var datetimebox = document.createElement("SPAN");
         datetimebox.id = "datetimebox";
         var datetime = document.createElement("p");
         datetimebox.innerText = d[i].displaytime;
 
+        var profilepicbox = document.createElement("SPAN");
+        profilepicbox.id = "profilepicbox";
         var img = document.createElement("img");
         img.src = d[i].profilepic;
         img.style.width = "40px";
         img.style.height = "40px";
+        img.style.borderRadius = "16px";
+        img.border = "1px solid #ddd";
+        img.padding = "5px";
+        profilepicbox.appendChild(img);
+
+        var fullMessage = document.createElement("DIV");
+        fullMessage.id = "fullmessagebox";
+        fullMessage.appendChild(profilepicbox);
+        fullMessage.appendChild(msgbox);
+        fullMessage.appendChild(datetimebox);
 
         if(owner == user){
             var del = document.createElement("BUTTON");
@@ -399,9 +435,7 @@ function renderMessages(d) {
             console.log("append")
         } 
         
-        msgdisplay.appendChild(msgbox);
-        msgdisplay.append(datetimebox);
-        msgbox.prepend(img);
+        msgdisplay.appendChild(fullMessage);
     }
 }
 
