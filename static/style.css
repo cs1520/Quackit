@@ -55,13 +55,13 @@ img{
 #friends{
   width: 10%;
   height: 20px;
-  float: left;
+  float: right;
 }
 
 #groups{
   width: 10%;
   height: 20px;
-  float: left;
+  float: right;
 }
 
 #search{
