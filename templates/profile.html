@@ -2,6 +2,10 @@
 <style>
     img {
   border-radius: 50%;
+  border: 2px solid green;
+}
+h4{
+    color: blue
 }
     button[type = submit] {
   background-color: grey;
@@ -188,22 +192,21 @@ a{
 
     <div id = profile><a href = '/logout'>Logout</a></div>
     <div id='quackit'><a href='/'>Quackit</a></div>
-    <div id='friends'><a>Friends</a></div>
+    <div id='friends'><a href = '/friends'>Friends</a></div>
     <div id='groups'><a href='/groups'>Groups</a></div>
     <div id='search'><a>Search</a></div>
   </div>
 
     <div id = friendslist>
-        <h2>Your Friends:</h2>
-        <p id = listText>No Friends Found...</p>        
+        <h2>Your Friends:</h2>       
         <a href = "/friends">Add New Friends!</a>
     </div>
         
     <!--<div id = login><a href = '/login'>Login</a></div>-->
-     <img id = profilepicture height = 200px width = 200px src =""></img>
+     <img id = userprofilepicture height = 200px width = 200px src =""></img>
 
-    <div id = hellomessage>
-        Text</div>
+    <div>
+        <h3 id = hellomessage>Text</h3></div>
     <a href = '/changeData'>Change Password</a>
     <p></p>
     <a href = '/imageUpload'>Upload New Profile Picture</a>
@@ -213,23 +216,53 @@ a{
 
 <script type='text/javascript'>
     var username = '{{ name }}';
-    var profilepic = '{{ pic }}';
+    var profilepics = '{{ pic | tojson}}';
     var friendList = '{{ friendList | tojson}}';
     var str = '';
-    var obj = JSON.parse(friendList);
+    var uFriends = JSON.parse(friendList);
+    var pics = JSON.parse(profilepics);
 
     document.getElementById("hellomessage").innerText = "Hello, " + username;
-    if(profilepic != null && profilepic != ''){
-        document.getElementById("profilepicture").src = profilepic;
+    
+    //Loads user profile pic
+    if(pics != null){  
+        for(i = 0; i < pics.length; i++){
+            if(pics[i].User == username){
+                document.getElementById("userprofilepicture").src = pics[i].profilepic;
+            }
+        }     
     }
 
+
     //load friends 
-    if(obj != null){  
-        for(i = 0; i < obj.length; i++){
-            str += obj[i].friend + "\n";
-            console.log(obj)
+    if(uFriends != null){  
+        let friendDisplay = document.getElementById("friendslist");
+        friendDisplay.appendChild(document.createElement("p"));
+        for(i = 0; i < uFriends.length; i++){
+            //str += obj1[i].friend + "\n";
+            
+            var friendData = document.createElement("DIV");
+            //friendData.innertext = "msgbox";
+            var fPic = document.createElement("img");
+            fPic.style.width = "80px";
+            fPic.style.height = "80px";
+            //fPic.style.borderRadius = "50%";
+
+            if(pics != null){  
+                for(n = 0; n < pics.length; n++){
+                    if(pics[n].User == uFriends[i].friend){
+                        fPic.src = pics[n].profilepic;
+                    }
+                }     
+            }
+
+            var fName = document.createElement("h4");
+            fName.innerText = uFriends[i].friend;
+            friendData.appendChild(fPic);
+            friendData.appendChild(fName);
+            friendDisplay.appendChild(friendData);
         }   
-        document.getElementById("listText").innerText = str;
+        //document.getElementById("listText").innerText = str;
     }
 </script>
 </body>
