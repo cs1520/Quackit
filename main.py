@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from google.cloud import datastore
 from datetime import datetime, timedelta
+import pytz
 import itertools
 import hashlib
 import os
@@ -191,14 +192,16 @@ def messagecreate(group):
     messageM = request.form.get("message")
     messagePP = request.form.get("profilepic")
     messageU = get_user()
-    dateandtime = datetime.now()    
+
+    dateandtime = pytz.utc.localize(datetime.utcnow())
+    east_dateandtime = dateandtime.astimezone(pytz.timezone("America/New_York"))
     
     message_key = data.key("Message")
     message = datastore.Entity(key=message_key)
     message["Text"] = messageM
     message["User"] = messageU
-    message["CreationTime"] = dateandtime
-    message["DisplayTime"] = dateandtime.strftime("%x")
+    message["CreationTime"] = east_dateandtime
+    message["DisplayTime"] = east_dateandtime.strftime("%x")
     message["GroupTitle"] = group
     message["ProfilePic"] = messagePP
     data.put(message)
