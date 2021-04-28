@@ -400,6 +400,9 @@ def verify_password(username, password):
             #print("result is null")
             return False
 
+        if(username_Auth(username) == True):
+            return False  
+
         userData = [{"U": i["username"], "P": i["hashPassword"], "S": i["salt"]} for i in result]
 
         #print(userData[0]["U"])
@@ -407,10 +410,7 @@ def verify_password(username, password):
         #print(userData[0]["S"])
 
         #userSalt = str(userData[0]["S"])
-        #print(userSalt)
-
-        #if(username_Auth(username) == False):
-            #return False        
+        #print(userSalt)      
 
         if(userData[0]["U"] == username):
             print("Username Match!")
