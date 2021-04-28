@@ -140,9 +140,12 @@ function renderActiveFriends(d){
         str+=d[i].friend+' posted';
         friendname.innerText = str;
         str = '\"'+d[i].lastmessage+'\"'
+        var link = document.createElement("A");
+        link.href = "/groups/"+d[i].messagegroup;
         lastmessage.innerText = str;
-        item.appendChild(friendname);
-        item.appendChild(lastmessage);
+        link.appendChild(friendname);
+        link.appendChild(lastmessage);
+        item.appendChild(link);
         box.appendChild(item);
     }
 }
