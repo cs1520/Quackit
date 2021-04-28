@@ -71,6 +71,15 @@ function renderFollowedGroups(d){
     var box = document.getElementsByName("activegroupsbox")[0];
     console.log(box);
 
+    if(d.length==0){
+        var item = document.createElement("DIV");
+        item.id = "item";
+        var notification = document.createElement("DIV");
+        notification.id = "toppost";
+        notification.innerText = "You're Not Following Any Groups!";
+        item.appendChild(notification);
+        box.appendChild(item);
+    }
     for(var i = 0; i< d.length; i ++){
         var item = document.createElement("DIV");
         item.id = "item";
@@ -93,8 +102,7 @@ function renderFollowedGroups(d){
 function renderRecommended(d){
     var rec = document.getElementById("Recommended");
     var box = document.createElement("DIV");
-    box.id = "minibox";
-
+    box.id = "minibox";    
     for(var i=0; i<d.length;i++){
         if(i==2){break;}
         var groupname = document.createElement("DIV");
@@ -111,6 +119,15 @@ function renderRecommended(d){
 function renderActiveFriends(d){
     var box = document.getElementsByName("activefriendsbox")[0];
     var str = '';
+    if(d.length==0){
+        var item = document.createElement("DIV");
+        item.id = "item";
+        var notification = document.createElement("DIV");
+        notification.id = "toppost";
+        notification.innerText = "You Don't Have Any Friends :(";
+        item.appendChild(notification);
+        box.appendChild(item);
+    }
     for(var i=0; i<d.length; i++){
         if(i==2){break;}
         str = '';
