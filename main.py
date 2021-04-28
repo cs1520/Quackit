@@ -79,6 +79,7 @@ def home_activeFriends():
 
     userFriends = []
     lastMessages = []
+    lastMessageGroup = []
 
     for i in ufResult:        
         userFriends.append(i["Friend"])
@@ -88,17 +89,20 @@ def home_activeFriends():
         lastMessageQuery.add_filter('User','=',userFriends[i])
         lmq = lastMessageQuery.fetch()
         messages = []
+        messageGroups = []
         for j in lmq:
             messages.append(j["Text"])
+            messageGroups.append(j["GroupTitle"])
         if(len(messages)==0):
             continue
         for j in range(len(messages)):
             lastMessages.append(messages[j])
+            lastMessageGroup.append(messageGroups[j])
             break
 
     x = []
     for i in range(len(lastMessages)):
-        lmuEntry = [{"friend":userFriends[i], "lastmessage": lastMessages[i]}]
+        lmuEntry = [{"friend":userFriends[i], "lastmessage": lastMessages[i], "messagegroup": lastMessageGroup[i]}]
         x.append(lmuEntry[0])
     
     return jsonify(x)
