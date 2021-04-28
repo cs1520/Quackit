@@ -6,6 +6,10 @@ img{
     width: 100%;
 }
 
+.profpic{
+    border-radius: 50%;
+}
+
 #pageart{
   height:150px;
   width: 100%;
@@ -360,6 +364,10 @@ function renderNewMessage(){
     img.src = profilepic;
     img.style.width = "40px";
     img.style.height = "40px";
+    console.log("Adding borderRadius!");
+    img.style.borderRadius = "20px";
+    
+    //img.classList.add("profpic");
 
     msgdisplay.prepend(datetimebox);
     msgdisplay.prepend(msgbox);
@@ -385,6 +393,8 @@ function renderMessages(d) {
         img.src = d[i].profilepic;
         img.style.width = "40px";
         img.style.height = "40px";
+        console.log("Adding borderRadius!");
+        img.style.borderRadius = "20px";
 
         if(owner == user){
             var del = document.createElement("BUTTON");
