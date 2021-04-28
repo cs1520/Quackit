@@ -88,7 +88,7 @@ function renderFollowedGroups(d){
         groupname.innerText = d[i].group;
         var toppost = document.createElement("DIV");
         toppost.id = "toppost";
-        toppost.innerText = d[i].text;
+        toppost.innerText = '\"'+d[i].text+'\"';
         var link = document.createElement("A");
         link.href = "/groups/" + d[i].group;
         item.appendChild(groupname);
@@ -163,7 +163,10 @@ function renderFOF(d){
         friendname.id = "groupname";
         str+=d[i].friend;
         friendname.innerText = d[i].friend;
-        box.appendChild(friendname);
+        var link = document.createElement("A");
+        link.href = "/friends"; 
+        link.appendChild(friendname);
+        box.appendChild(link);
     }
     recFriends.appendChild(box);
 }
