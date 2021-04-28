@@ -87,8 +87,13 @@ def home_activeFriends():
         lastMessageQuery = data.query(kind = 'Message')
         lastMessageQuery.add_filter('User','=',userFriends[i])
         lmq = lastMessageQuery.fetch()
+        messages = []
         for j in lmq:
-            lastMessages.append(j["Text"])
+            messages.append(j["Text"])
+        if(len(messages)==0):
+            continue
+        for j in range(len(messages)):
+            lastMessages.append(messages[j])
             break
 
     x = []
